@@ -319,3 +319,5 @@ cython_debug/
 #.idea/
 
 .DS_STORE
+__pycache__/Circuit.cpython-39.pyc
+*.pyc

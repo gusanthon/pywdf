@@ -411,3 +411,13 @@ class VoltageDivider(Circuit):
 
         super().__init__(elements, self.Vs, self.Vs, self.R1)
 
+    def set_R1(self,new_R):
+        self.R1.set_resistance(new_R)
+
+    def set_R2(self,new_R):
+        self.R2.set_resistance(new_R)
+
+
+
+
+

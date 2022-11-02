@@ -1,3 +1,3 @@
 from wdf import *
-from Rtype import *
-from Circuit import *
+from rtype import *
+from circuit import *

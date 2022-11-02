@@ -1,5 +1,5 @@
 from wdf import *
-from Rtype import *
+from rtype import *
 import scipy.signal
 import matplotlib.pyplot as plt
 
@@ -394,8 +394,6 @@ class VoltageDivider(Circuit):
     def __init__(self, fs: int, R1_val: float, R2_val: float) -> None:
         self.fs = fs
 
-
-        # R1_val = R2_val = 10000
         self.R1 = Resistor(R1_val)
         self.R2 = Resistor(R2_val)
 

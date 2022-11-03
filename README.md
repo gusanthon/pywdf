@@ -39,7 +39,7 @@ lpf = RCLowPass(44100)
 lpf.plot_freqz()
 ```
 
-Also in<code>circuit.py</code>are several example circuits, including <code>DiodeClipper</code>, <code>TR_808_HatResonator</code>, <code>BaxandallEQ</code>, eg:
+Also in <code>circuit.py</code> are several example circuits, including <code>DiodeClipper</code>, <code>TR_808_HatResonator</code>, <code>BaxandallEQ</code>, eg:
 ```python
 from circuit import DiodeClipper
 

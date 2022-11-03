@@ -9,7 +9,8 @@ Associated with master's thesis:
 
 Basic wdf elements and adaptors can be found in<code>wdf.py</code>, while adapted and unadapted R-type adaptors are in <code>rtype.py</code>.  <code>circuit.py</code> contains a generic circuit class from which any wave digital circuit built using this library can inherit basic functionalities, such as  <code>process_sample</code>, <code>get_impulse_response</code>, <code>plot_freqz</code>.
 
-Below is an example RC low pass filter, initialized with its components and connections, and inheriting the Circuit functionality by specifying its list of elements, its voltage source, the root of its connection tree, and where to probe the output voltage.  
+Below is an example RC low pass filter, initialized with its components and connections, and inheriting the Circuit functionality by specifying its list of elements, its voltage source, the root of its connection tree, and where to probe the output voltage. It is equivalent to the RC low pass filter example provided in Jatin Chowdhury's C++ library above. 
+
 ```python
 from circuit import Circuit
 

@@ -40,7 +40,6 @@ class RCLowPass(Circuit):
 
         super().__init__(elements, self.Vs, self.Vs, self.C1)
       
-      
     def set_cutoff(self, new_cutoff: float):
         if self.cutoff != new_cutoff:
             self.cutoff = new_cutoff

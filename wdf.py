@@ -7,8 +7,8 @@ class baseWDF:
         self.a, self.b = 0, 0
         self.parent = None
 
-    def connect_to_parent(self, p: baseWDF) -> None:
-        self.parent = p
+    def connect_to_parent(self, parent: baseWDF) -> None:
+        self.parent = parent
 
     def accept_incident_wave(self, a: float) -> None:
         self.a = a
@@ -227,7 +227,7 @@ class PolarityInverter(baseWDF):
         self.a = a
         self.p1.accept_incident_wave(-a)
 
-    def propagate_reflected_wave(self) -> None:
+    def propagate_reflected_wave(self) -> float:
         self.b = 0 - self.p1.propagate_reflected_wave()
         return self.b
 

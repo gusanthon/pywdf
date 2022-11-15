@@ -1,5 +1,5 @@
-## wdf.py
-<code>wdf.py</code> is a lightweight Python library for modeling and simulating wave digital filter circuits.
+## pywdf
+<code>pywdf</code> is a lightweight Python library for modeling and simulating wave digital filter circuits.
 
 Based on Jatin Chowdhury's C++ wdf library:  https://github.com/Chowdhury-DSP/chowdsp_wdf
 

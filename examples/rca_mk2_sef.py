@@ -1,3 +1,6 @@
+#  As described in : 
+#  https://dafx2020.mdw.ac.at/proceedings/papers/DAFx20in22_paper_39.pdf
+
 import sys
 import os
 

@@ -57,16 +57,10 @@ class BaxandallEQ(Circuit):
         self.S1 = SeriesAdaptor(self.R_adaptor, self.Ca)
         self.Vin = IdealVoltageSource(self.S1)
 
-        elements = [
-            self.Pt_plus, self.Resd, self.P4, self.Cd, self.S4, self.Pt_minus, self.Rese, self.P5, self.Ce, self.S5,
-            self.Rl, self.P1, self.Resc, self.Pb_minus, self.Cc, self.P3, self.Resb, self.S3, self.Pb_plus, self.Cb,
-            self.P2, self.Resa, self.S2, self.R_adaptor, self.Ca, self.S1, self.Vin
-        ]
-
         self.set_bass(bass)
         self.set_treble(treble)
 
-        super().__init__(elements, self.Vin, self.Vin, self.Rl)
+        super().__init__(self.Vin, self.Vin, self.Rl)
 
     def __impedance_calc(self, R: RTypeAdaptor):
         Ra, Rb, Rc, Rd, Re = R.get_port_impedances()
@@ -134,4 +128,3 @@ class UnadaptedBaxandallEQ(BaxandallEQ):
         self.Vin.set_voltage(sample)
         self.R_adaptor.compute()
         return self.output.wave_to_voltage()
-

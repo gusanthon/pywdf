@@ -27,17 +27,7 @@ class PassiveLPF(Circuit):
 
         self.Vs = IdealVoltageSource(self.P1)
 
-        elements = [
-            self.R1,
-            self.R2,
-            self.C1,
-            self.C2,
-            self.S1,
-            self.P1,
-            self.S2,
-        ]
-
-        super().__init__(elements, self.Vs, self.Vs, self.C2)
+        super().__init__(self.Vs, self.Vs, self.C2)
 
     def set_cutoff(self, new_cutoff: float) -> None:
         if self.cutoff != new_cutoff:

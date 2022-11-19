@@ -6,16 +6,14 @@ import matplotlib.pyplot as plt
 
 class Circuit:
 
-    def __init__(self, elements: list, source: baseWDF, root: baseWDF, output: baseWDF) -> None:
+    def __init__(self, source: baseWDF, root: baseWDF, output: baseWDF) -> None:
         """Initialize Circuit class functionality.
 
         Args:
-            elements (list): list containing each of the circuit's wave digital elememts 
             source (baseWDF): the circuit's voltage source
             root (baseWDF): the root of the wdf connection tree
             output (baseWDF): the component to be probed for output signal
         """
-        self.elements = elements
         self.source = source
         self.root = root
         self.output = output
@@ -70,13 +68,15 @@ class Circuit:
 
     def set_sample_rate(self, new_fs: int) -> None:
         if self.fs != new_fs:
-            self.fs = new_fs
-            for el in self.elements:
-                if hasattr(el,'fs'):
-                    el.prepare(new_fs)
+            for key in self.__dict__:
+                if hasattr(self.__dict__[key], 'fs'):
+                    self.__dict__[key].prepare(new_fs)
 
     def reset(self) -> None:
-        for el in self.elements: el.reset()
+        for key in self.__dict__:
+            if isinstance(self.__dict__[key], baseWDF):
+                self.__dict__[key].reset()
+
 
     def plot_freqz(self, delta_dur: float = 1, amp: float = 1):
         x = self.get_impulse_response(delta_dur = delta_dur, amp = amp)

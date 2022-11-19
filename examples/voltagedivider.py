@@ -17,15 +17,7 @@ class VoltageDivider(Circuit):
         self.I1 = PolarityInverter(self.P1)
         self.Vs = IdealVoltageSource(self.I1)
 
-        elements = [
-            self.R1,
-            self.R2,
-            self.P1,
-            self.I1,
-            self.Vs,
-        ]
-
-        super().__init__(elements, self.Vs, self.Vs, self.R1)
+        super().__init__(self.Vs, self.Vs, self.R1)
 
     def set_R1(self,new_R):
         self.R1.set_resistance(new_R)

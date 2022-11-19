@@ -122,38 +122,7 @@ class RCA_MK2_SEF(Circuit):
         self.S0 = SeriesAdaptor(self.Rin, self.S1)
         self.Vin = IdealVoltageSource(self.S0)
 
-        elements = [
-            self.Rt,
-            self.L_LPm2,
-            self.S8,
-            self.C_LPm1,
-            self.P4,
-            self.L_LPm1,
-            self.S7,
-            self.L_LP2,
-            self.S6,
-            self.C_LP1,
-            self.P3,
-            self.L_LP1,
-            self.S5,
-            self.C_HP2,
-            self.S4,
-            self.L_HP1,
-            self.P2,
-            self.C_HP1,
-            self.S3,
-            self.C_HPm2,
-            self.S2,
-            self.L_HPm,
-            self.P1,
-            self.C_HPm1,
-            self.S1,
-            self.Rin,
-            self.S0,
-            self.Vin
-        ]
-
-        super().__init__(elements, self.Vin, self.Vin, self.Rt)
+        super().__init__(self.Vin, self.Vin, self.Rt)
 
     def _set_HP_components(self, C, L):
         self.C_HP1.set_capacitance(C)

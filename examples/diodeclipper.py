@@ -31,16 +31,7 @@ class DiodeClipper(Circuit):
         self.P1 = ParallelAdaptor(self.S1, self.C1)
         self.Dp = DiodePair(self.P1, 2.52e-9, n_diodes=n_diodes)
 
-        elements = [
-            self.R1,
-            self.Vs,
-            self.S1,
-            self.C1,
-            self.P1,
-            self.Dp,
-        ]
-
-        super().__init__(elements, self.Vs, self.Dp, self.C1)
+        super().__init__(self.Vs, self.Dp, self.C1)
 
     def process_sample(self, sample: float) -> float:
         sample *= self.input_gain

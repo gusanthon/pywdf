@@ -25,20 +25,9 @@ class TR_808_HatResonator(Circuit):
         self.R196 = Resistor(680)
         self.R_adaptor = RootRTypeAdaptor([self.S1, self.R197, self.C58, self.C59, self.R196], self.__impedance_calc)
 
-        elements = [
-            self.Vin,
-            self.C4,
-            self.S1,
-            self.R197,
-            self.C58,
-            self.C59,
-            self.R196,
-            self.R_adaptor
-        ]
-
         self.__set_components()
 
-        super().__init__(elements, self.Vin, self.R_adaptor, self.R196)
+        super().__init__(self.Vin, self.R_adaptor, self.R196)
 
 
     def process_sample(self, sample: float) -> float:

@@ -68,6 +68,7 @@ class Circuit:
 
     def set_sample_rate(self, new_fs: int) -> None:
         if self.fs != new_fs:
+            self.fs = new_fs
             for key in self.__dict__:
                 if hasattr(self.__dict__[key], 'fs'):
                     self.__dict__[key].prepare(new_fs)

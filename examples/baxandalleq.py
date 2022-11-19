@@ -114,12 +114,6 @@ class UnadaptedBaxandallEQ(BaxandallEQ):
         self.Vin = ResistiveVoltageSource()
         self.S1 = SeriesAdaptor(self.Vin,self.Ca)
         self.R_adaptor = RootRTypeAdaptor([self.S4,self.P1,self.Resc, self.S3, self.S2, self.S1], __impedance_calc)
-
-        self.elements = [
-            self.Pt_plus, self.Resd, self.P4, self.Cd, self.S4, self.Pt_minus, self.Rese, self.P5, self.Ce, self.S5,
-            self.Rl, self.P1, self.Resc, self.Pb_minus, self.Cc, self.P3, self.Resb, self.S3, self.Pb_plus, self.Cb,
-            self.P2, self.Resa, self.S2, self.R_adaptor, self.Ca, self.S1, self.Vin
-        ]
         
         self.root = self.R_adaptor
         self.source = self.Vin

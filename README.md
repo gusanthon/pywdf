@@ -12,6 +12,7 @@ Basic wdf elements and adaptors can be found in<code>wdf.py</code>, while adapte
 Below is an example RC low pass filter, initialized with its components and connections, and inheriting the Circuit functionality by specifying its voltage source, the root of its connection tree, and which wave digital element to probe for the output voltage. It is equivalent to the RC low pass filter example provided in Jatin Chowdhury's C++ library above. 
 
 ```python
+from wdf import *
 from circuit import Circuit
 
 class RCLowPass(Circuit):
@@ -43,7 +44,7 @@ lpf.set_cutoff(2000)
 lpf.plot_freqz()
 ```
 
-See examples directory for several example circuits, including <code>DiodeClipper</code>, <code>RCA_MK2_SEF</code>, <code>TR_808_HatResonator</code>, <code>BaxandallEQ</code>, e.g:
+See examples directory for several example circuits, including <code>DiodeClipper</code>, <code>RCA_MK2_SEF</code>, <code>TR_808_HatResonator</code>, <code>BaxandallEQ</code>. Usage:
 ```python
 from examples.diodeclipper import DiodeClipper
 

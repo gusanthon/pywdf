@@ -46,6 +46,76 @@ class rootWDF(baseWDF):
 ####################################################################################
 
 
+# open circuit, close circuit and switch (they can be seen as a variable resistors)
+class ShortCircuit(baseWDF):
+    def __init__(self):
+        baseWDF.__init__(self)
+        self.calc_impedance()
+
+    def calc_impedance(self) -> None:
+        self.Rp = 0
+        self.G = 1e16
+
+    def accept_incident_wave(self, a: float) -> None:
+        self.a = a
+
+    def propagate_reflected_wave(self) -> float:
+        self.b = -self.a
+        return self.b
+
+
+####################################################################################
+
+class OpenCircuit(baseWDF):
+    def __init__(self):
+        baseWDF.__init__(self)
+        self.calc_impedance()
+
+    def calc_impedance(self) -> None:
+        self.Rp = 0
+        self.G = 1e16
+
+    def accept_incident_wave(self, a: float) -> None:
+        self.a = a
+
+    def propagate_reflected_wave(self) -> float:
+        self.b = self.a
+        return self.b
+
+
+####################################################################################
+
+class Switch(baseWDF):
+    def __init__(self):
+        baseWDF.__init__(self)
+        self.state = False
+        self.calc_impedance()
+
+    def calc_impedance(self) -> None:
+        if self.state:
+            self.Rp = 0
+            self.G = 1.0 / np.finfo(float).eps
+        else:
+            self.Rp = 1e16
+            self.G = 1.0 / self.Rp
+
+    def accept_incident_wave(self, a: float) -> None:
+        self.a = a
+
+    def propagate_reflected_wave(self) -> float:
+        if self.state:  # Closed
+            self.b = -self.a
+        else:  # Open
+            self.b = self.a
+        return self.b
+
+    def change_state(self, state: bool) -> None:
+        self.state = state
+        self.impedance_change()
+
+
+####################################################################################
+
 class Resistor(baseWDF):
     def __init__(self, R: float = 1e-9) -> None:
         baseWDF.__init__(self)

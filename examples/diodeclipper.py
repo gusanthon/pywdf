@@ -1,10 +1,13 @@
 import sys
 import os
 
-sys.path.insert(1, os.path.join(sys.path[0], '..'))
+current = os.path.dirname(os.path.realpath(__file__))
+parent = os.path.dirname(current)
+sys.path.append(parent)
 
-from wdf import *
-from circuit import Circuit
+from core.wdf import *
+from core.circuit import Circuit
+
 
 class DiodeClipper(Circuit):
     def __init__(

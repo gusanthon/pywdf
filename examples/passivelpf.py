@@ -1,10 +1,10 @@
 import sys
 import os
 
-sys.path.insert(1, os.path.join(sys.path[0], '..'))
+sys.path.append(os.path.abspath(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
 
-from wdf import *
-from circuit import Circuit
+from core.wdf import *
+from core.circuit import Circuit
 
 class PassiveLPF(Circuit):
     def __init__(self, sample_rate: int, cutoff: float = 1000) -> None:
@@ -35,3 +35,7 @@ class PassiveLPF(Circuit):
             self.C = (1.0 / self.Z) / (2 * np.pi * self.cutoff)
             self.C1.set_capacitance(self.C)
             self.C2.set_capacitance(self.C)
+
+if __name__ == '__main__':
+    lpf = PassiveLPF(44100, 1000)
+    lpf.plot_freqz()

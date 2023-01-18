@@ -4,11 +4,15 @@
 import sys
 import os
 
-sys.path.append(os.path.abspath(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
 
-from wdf import *
-from circuit import Circuit
-from rtype import RTypeAdaptor
+current = os.path.dirname(os.path.realpath(__file__))
+parent = os.path.dirname(current)
+sys.path.append(parent)
+
+from core.wdf import *
+from core.rtype import *
+from core.circuit import Circuit
+
 
 class BassmanToneStack(Circuit):
     def __init__(self, fs: int, bass: float, mid: float, treble: float) -> None:
@@ -93,5 +97,7 @@ class BassmanToneStack(Circuit):
                 self.R3_plus.wave_to_voltage() + \
                 self.R2.wave_to_voltage()
 
-bts = BassmanToneStack(44100, .5 , .5 ,.5)
-bts.plot_freqz()
+
+if __name__ == '__main__':
+    bts = BassmanToneStack(44100, .5 , .5 ,.5)
+    bts.plot_freqz()

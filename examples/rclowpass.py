@@ -1,10 +1,10 @@
 import sys
 import os
 
-sys.path.insert(1, os.path.join(sys.path[0], '..'))
+sys.path.append(os.path.abspath(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
 
-from wdf import *
-from circuit import Circuit
+from core.wdf import *
+from core.circuit import Circuit
 
 class RCLowPass(Circuit):
     def __init__(self, sample_rate: int, cutoff: float) -> None:
@@ -30,3 +30,6 @@ class RCLowPass(Circuit):
             self.R = 1.0 / (2 * np.pi * self.C * self.cutoff)
             self.R1.set_resistance(self.R)
 
+if __name__ == '__main__':
+    lpf = RCLowPass(44100, 1000)
+    lpf.plot_freqz()

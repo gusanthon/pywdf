@@ -1,10 +1,10 @@
 import sys
 import os
 
-sys.path.insert(1, os.path.join(sys.path[0], '..'))
+sys.path.append(os.path.abspath(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
 
-from wdf import *
-from circuit import Circuit
+from core.wdf import *
+from core.circuit import Circuit
 
 class VoltageDivider(Circuit):
     def __init__(self, fs: int, R1_val: float, R2_val: float) -> None:

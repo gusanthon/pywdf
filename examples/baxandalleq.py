@@ -1,11 +1,14 @@
 import sys
 import os
 
-sys.path.insert(1, os.path.join(sys.path[0], '..'))
+current = os.path.dirname(os.path.realpath(__file__))
+parent = os.path.dirname(current)
+sys.path.append(parent)
 
-from wdf import *
-from rtype import *
-from circuit import Circuit
+from core.wdf import *
+from core.rtype import *
+from core.circuit import Circuit
+
 
 class BaxandallEQ(Circuit):
     def __init__(self, fs: int, bass: float, treble: float) -> None:

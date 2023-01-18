@@ -4,14 +4,15 @@
 import sys
 import os
 
-sys.path.insert(1, os.path.join(sys.path[0], '..'))
+current = os.path.dirname(os.path.realpath(__file__))
+parent = os.path.dirname(current)
+sys.path.append(parent)
 
-import scipy
+from core.wdf import *
+from core.rtype import *
+from core.circuit import Circuit
+import scipy.signal
 import matplotlib.pyplot as plt
-from matplotlib.pyplot import cm
-from circuit import Circuit
-from wdf import *
-
 
 def get_closest(d, search_key):
     if d.get(search_key):
@@ -34,27 +35,35 @@ def plot_magnitude_response(circuit, label="magnitude", c="tab:blue", title=""):
     plt.legend()
 
 
+
 class RCA_MK2_SEF(Circuit):
     
     def __init__(self, sample_rate: int, highpass_cutoff: float, lowpass_cutoff: float) -> None:
+
+        # mod switches engaged by default
+
+        self.LP_mod = True
+        self.HP_mod = True
+
+        # C & L vals for each HP & LP fc
 
         self.HP_vals = {
             0 : {'C' : 9999999, 'L' : 9999999},
             175 : {'C' : 1.6e-6, 'L' : 255.6e-3},
             248 : {'C' : 1.15e-6, 'L' : 176.9e-3},
             352 : {'C' : .8e-6, 'L' : 126.4e-3},
-            497 : {'C' : .57e-6, 'L' : 176.9e-3},
-            699 : {'C' : 1.15e-6, 'L' : 90.11e-3},
+            497 : {'C' : .57e-6, 'L' : 90.11e-3},
+            699 : {'C' : .4e-6, 'L' : 63.9e-3},
             1002 : {'C' : .272e-6, 'L' : 44.56e-3},
             1411 : {'C' : .2e-6, 'L' : 31.79e-3 },
             2024 : {'C' : .15e-6, 'L' : 21.77e-3},
             2847 : {'C' : .1e-6, 'L' : 15.63e-3 },
-            3994 : {'C' : .071e-6, 'L' : 11.18e-3}
+            3994 : {'C' : .069e-6, 'L' : 11.18e-3}
         }
 
         self.LP_vals = {
             175 : {'C' : 3.22e-6, 'L' : 511.1e-3 },
-            245 : {'C' : 2.3e-6, 'L' : 365.2e-3 },
+            245 : {'C' : 2.3e-6, 'L' :  365.2e-3 },
             350 : {'C' : 1.6e-6, 'L' : 255.6e-3 },
             499 : {'C' : 1.15e-6, 'L' : 178.6e-3 },
             703 : {'C' : .8e-6, 'L' : 126.4e-3 },
@@ -71,8 +80,8 @@ class RCA_MK2_SEF(Circuit):
         self.Z_input = 560
         self.Z_output = 560
 
-        self.highpass_cutoff, HP_vals = get_closest(self.HP_vals, highpass_cutoff)
-        self.lowpass_cutoff, LP_vals = get_closest(self.LP_vals, lowpass_cutoff)
+        self.highpass_cutoff, HP_vals = self.get_closest(self.HP_vals, highpass_cutoff)
+        self.lowpass_cutoff, LP_vals = self.get_closest(self.LP_vals, lowpass_cutoff)
 
         self.C_HP = HP_vals['C']
         self.L_HP = HP_vals['L']
@@ -125,30 +134,93 @@ class RCA_MK2_SEF(Circuit):
         super().__init__(self.Vin, self.Vin, self.Rt)
 
     def _set_HP_components(self, C, L):
+        if self.HP_mod == True:
+            self.C_HPm1.set_capacitance(C)
+            self.C_HPm2.set_capacitance(C)
+            self.L_HPm.set_inductance(L)
+
         self.C_HP1.set_capacitance(C)
         self.C_HP2.set_capacitance(C)
-        self.C_HPm1.set_capacitance(C)
-        self.C_HPm2.set_capacitance(C)
-
         self.L_HP1.set_inductance(L)
-        self.L_HPm.set_inductance(L)
 
     def _set_LP_components(self, C, L):
+        if self.LP_mod == True:
+            self.C_LPm1.set_capacitance(C)
+            self.L_LPm1.set_inductance(L)
+            self.L_LPm2.set_inductance(L)
+        
         self.C_LP1.set_capacitance(C)
-        self.C_LPm1.set_capacitance(C)
-
         self.L_LP1.set_inductance(L)
         self.L_LP2.set_inductance(L)
-        self.L_LPm1.set_inductance(L)
-        self.L_LPm2.set_inductance(L)
+
+    def process_sample(self, sample: float) -> float:
+        gain_db = 6
+        k = 10 ** (gain_db / 20)
+        return k * super().process_sample(sample)
 
     def set_highpass_cutoff(self, new_cutoff):
-        self.highpass_cutoff, vals = get_closest(self.HP_vals, new_cutoff)
+        self.highpass_cutoff, vals = self.get_closest(self.HP_vals, new_cutoff)
         self._set_HP_components(vals['C'], vals['L'])
 
     def set_lowpass_cutoff(self, new_cutoff):
-        self.lowpass_cutoff, vals = get_closest(self.LP_vals, new_cutoff)
+        self.lowpass_cutoff, vals = self.get_closest(self.LP_vals, new_cutoff)
         self._set_LP_components(vals['C'], vals['L'])
+
+    def set_lowpass_knob_position(self, position):
+        for i, fc in enumerate(self.LP_vals):
+            if i+1 == position:
+                self._set_LP_components(self.LP_vals[fc]["C"], self.LP_vals[fc]['L'])
+                return
+        print('Invalid position, positions are 1 - 11')
+
+    def set_highpass_knob_position(self, position):
+        for i, fc in enumerate(self.HP_vals):
+            if i+1 == position:
+                self._set_HP_components(self.HP_vals[fc]["C"], self.HP_vals[fc]['L'])
+                return
+        print('Invalid position, positions are 1 - 11')
+
+    def engage_HP_mod(self):
+        if self.HP_mod == True:
+            print('HP mod already engaged')
+            return
+        self.HP_mod = True
+        self.C_HPm1.set_capacitance(self.HP_vals[self.highpass_cutoff]['C']) 
+        self.C_HPm2.set_capacitance(self.HP_vals[self.highpass_cutoff]['C'])
+        self.L_HPm.set_inductance(self.HP_vals[self.highpass_cutoff]['L'])
+
+    def engage_LP_mod(self):
+        if self.LP_mod == True:
+            print('LP mod already engaged')
+            return
+        self.LP_mod = True
+        self.L_LPm1.set_inductance(self.LP_vals[self.lowpass_cutoff]['L'])
+        self.L_LPm2.set_inductance(self.LP_vals[self.lowpass_cutoff]['L'])
+        self.C_LPm1.set_capacitance(self.LP_vals[self.lowpass_cutoff]['C'])
+
+    def disengage_LP_mod(self):
+        if self.LP_mod == False:
+            print('LP mod already disengaged')
+            return
+        self.LP_mod = False
+        self.L_LPm1.set_inductance(self.LP_vals[999999]['L'])
+        self.L_LPm2.set_inductance(self.LP_vals[999999]['L'])
+        self.C_LPm1.set_capacitance(self.LP_vals[999999]['C'])
+
+    def disengage_HP_mod(self):
+        if self.HP_mod == False:
+            print('HP mod already disengaged')
+            return
+        self.HP_mod = False
+        self.C_HPm1.set_capacitance(self.HP_vals[0]['C']) 
+        self.C_HPm2.set_capacitance(self.HP_vals[0]['C'])
+        self.L_HPm.set_inductance(self.HP_vals[0]['L'])
+
+    def toggle_LP_mod(self):
+        self.disengage_LP_mod() if self.LP_mod else self.engage_LP_mod()
+
+    def toggle_HP_mod(self):
+        self.disengage_HP_mod() if self.HP_mod else self.engage_HP_mod()
 
     def set_Z_input(self, new_Z):
         if self.Z_input != new_Z:
@@ -160,23 +232,31 @@ class RCA_MK2_SEF(Circuit):
             self.Z_output = new_Z
             self.Rt.set_resistance(new_Z)
 
+    def get_closest(self, d, search_key):
+        if d.get(search_key):
+            return search_key, d[search_key]
+        key = min(d.keys(), key=lambda key: abs(key - search_key))
+        return key, d[key]
 
-mk2 = RCA_MK2_SEF(44100, 175, 3990)
 
-colors = cm.rainbow(np.linspace(0,1,len(mk2.LP_vals)))
+if __name__ == '__main__':
 
-# plot HP cutoff positions
-for i, fc in enumerate(mk2.HP_vals):
-    mk2.set_highpass_cutoff(fc)
-    plot_magnitude_response(mk2, label = f'{fc} hz', c = colors[i], title= 'HPF sweep ')
+    mk2 = RCA_MK2_SEF(44100, 175, 3990)
 
-plt.show()
+    colors = plt.cm.rainbow(np.linspace(0,1,len(mk2.LP_vals)))
 
-mk2.set_highpass_cutoff(170)
+    # plot HP cutoff positions
+    for i, fc in enumerate(mk2.HP_vals):
+        mk2.set_highpass_cutoff(fc)
+        plot_magnitude_response(mk2, label = f'{fc} hz', c = colors[i], title= 'HPF sweep ')
 
-# plot LP cutoff positions
-for i, fc in enumerate(mk2.LP_vals):
-    mk2.set_lowpass_cutoff(fc)
-    plot_magnitude_response(mk2, label = f'{fc} hz', c = colors[i], title= 'LPF sweep ')
+    plt.show()
 
-plt.show()
+    mk2.set_highpass_cutoff(170)
+
+    # plot LP cutoff positions
+    for i, fc in enumerate(mk2.LP_vals):
+        mk2.set_lowpass_cutoff(fc)
+        plot_magnitude_response(mk2, label = f'{fc} hz', c = colors[i], title= 'LPF sweep ')
+
+    plt.show()

@@ -12,7 +12,9 @@ Developed from work done in master thesis [Evaluating the Nonlinearities of A Di
 
 
 ## Installation
-<code>pip install git+https://github.com/gusanthon/pywdf</code>
+```
+pip install git+https://github.com/gusanthon/pywdf
+```
 
 ## Usage
 

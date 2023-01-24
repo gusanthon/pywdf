@@ -12,6 +12,6 @@ from .examples.rca_mk2_sef import RCA_MK2_SEF
 from .examples.rclowpass import RCLowPass
 from .examples.voltagedivider import VoltageDivider
 
-
-__all__ = ['examples', 'lib']
+name = "pywdf"
+# __all__ = ['examples', 'lib']
 

@@ -1,20 +1,21 @@
 import numpy as np
 from typing import Callable
-from .wdf import baseWDF
+from .wdf import baseWDF, rootWDF
 from .rtype import RTypeAdaptor
 from scipy.io import wavfile
+import scipy.signal
 import matplotlib.pyplot as plt
 from scipy.fftpack import fft
 
 
 class Circuit:
 
-    def __init__(self, source: baseWDF, root: baseWDF, output: baseWDF) -> None:
+    def __init__(self, source: baseWDF, root: rootWDF, output: baseWDF) -> None:
         """Initialize Circuit class functionality.
 
         Args:
             source (baseWDF): the circuit's voltage source
-            root (baseWDF): the root of the wdf connection tree
+            root (rootWDF): the root of the wdf connection tree
             output (baseWDF): the component to be probed for output signal
         """
         self.source = source
@@ -65,11 +66,25 @@ class Circuit:
             return self.process_signal(args[0])
 
     def get_impulse_response(self, delta_dur: float = 1, amp: float = 1) -> np.array:
+        """Get circuit's impulse response 
+
+        Args:
+            delta_dur (float, optional): duration of Dirac delta function in seconds. Defaults to 1.
+            amp (float, optional): amplitude of delta signal's first sample. Defaults to 1.
+
+        Returns:
+            np.array: impulse response of the system
+        """
         d = np.zeros(int(delta_dur * self.fs))
         d[0] = amp
         return self.process_signal(d)
 
-    def set_sample_rate(self, new_fs: int) -> None:
+    def set_sample_rate(self, new_fs: float) -> None:
+        """Change system's sample rate
+
+        Args:
+            new_fs (float): sample rate to change circuit to
+        """
         if self.fs != new_fs:
             self.fs = new_fs
             for key in self.__dict__:
@@ -77,11 +92,18 @@ class Circuit:
                     self.__dict__[key].prepare(new_fs)
 
     def reset(self) -> None:
+        """Return values of each circuit element's incident & reflected waves to 0
+        """
         for key in self.__dict__:
             if isinstance(self.__dict__[key], baseWDF):
                 self.__dict__[key].reset()
 
-    def plot_freqz(self, outpath=None):
+    def plot_freqz(self, outpath: str = None):
+        """Plot the circuit's frequency response
+
+        Args:
+            outpath (str, optional): filepath to save figure. Defaults to None.
+        """
         x = self.get_impulse_response()
         #w, h = scipy.signal.freqz(x, 1, 2**15)
         fft_size = int(2 ** 15)
@@ -122,7 +144,14 @@ class Circuit:
         plt.show()
 
     def plot_freqz_list(self, values: list, set_function: Callable, param_label: str = 'value', outpath: str = None):
+        """Plot circuit's frequency response(s) while varying a parameter
 
+        Args:
+            values (list): list of parameter values to iterate through
+            set_function (Callable): circuit's function for setting parameter
+            param_label (str, optional): name of parameter being modulated. Defaults to 'value'.
+            outpath (str, optional): filepath to save figure. Defaults to None.
+        """
         # TODO: create a legend with values
         # TODO: add a label as input parameter to be use in the legend
         # TODO: split this function in compute_magnitude_and_phase
@@ -133,7 +162,7 @@ class Circuit:
         frequencies = np.linspace(0, nyquist, N2)
  
         _, ax = plt.subplots(nrows=2, ncols=1, figsize=(10, 6.5))
-        
+
         for value in values:
             print(f'{param_label} : {value}')
             set_function(value)
@@ -173,5 +202,51 @@ class Circuit:
         plt.show()
 
 
+    def AC_transient_analysis(self, freq: float = 1000, amplitude: float = 1, t_ms: float = 1, outpath: str = None):
+        """Plot transient analysis of Circuit's response to sine wave
+
+        Args:
+            freq (float, optional): frequency of sine wave. Defaults to 1000.
+            amplitude (float, optional): amplitude of sine wave. Defaults to 1.
+            t_ms (float, optional): time in ms of sine wave. Defaults to 5.
+        """
+        _, ax = plt.subplots(nrows=2, ncols=1, figsize=(10, 6.5))
+
+        n_samples = int(t_ms * self.fs / 100)
+
+        n = np.arange(0, 2, 1/self.fs) 
+        x = np.sin(2 * np.pi * freq * n) * amplitude
+        y = self.process_signal(x)
+
+        ax[0].plot(x[:n_samples], label="input signal")
+        ax[0].plot(y[:n_samples], label="output signal")
+        ax[0].set_xlabel("sample")
+        ax[0].set_ylabel("amplitude")
+        ax[0].set_title(loc = 'left', label = "output signal vs input signal waveforms")
+
+        ax[0].legend()
+
+        N = len(n)
+        w = scipy.signal.windows.hann((len(n)))
+        y_fft = scipy.fft.fft(w * y)
+        yf = scipy.fft.fftfreq(N, 1 / self.fs)[20 : N // 2]
+
+        ax[1].plot(yf, 2.0 / N * np.abs(y_fft[20 : N // 2]))
+        ax[1].set_xlabel("frequency [Hz]")
+        ax[1].set_ylabel("magnitude")
+        ax[1].set_title(loc = 'left', label = "output signal spectrum")
+        ax[1].grid(True)
+
+        if outpath:
+            plt.savefig(outpath)
+
+        plt.show()
+        
+
     def _impedance_calc(self, R: RTypeAdaptor):
+        """Placeholder function used to calculate impedance of Rtype adaptor
+
+        Args:
+            R (RTypeAdaptor): Rtype of which to calculate impedance
+        """
         pass

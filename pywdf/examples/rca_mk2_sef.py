@@ -1,8 +1,7 @@
 #  As described in : 
 #  https://dafx2020.mdw.ac.at/proceedings/papers/DAFx20in22_paper_39.pdf
 
-import sys
-import os
+import sys, os
 
 current = os.path.dirname(os.path.realpath(__file__))
 parent = os.path.dirname(current)
@@ -11,29 +10,6 @@ sys.path.append(parent)
 from core.wdf import *
 from core.rtype import *
 from core.circuit import Circuit
-import scipy.signal
-import matplotlib.pyplot as plt
-
-def get_closest(d, search_key):
-    if d.get(search_key):
-        return search_key, d[search_key]
-    key = min(d.keys(), key=lambda key: abs(key - search_key))
-    return key, d[key]
-
-def plot_magnitude_response(circuit, label="magnitude", c="tab:blue", title=""):
-    x = circuit.get_impulse_response()
-    w, h = scipy.signal.freqz(x, 1, 4096)
-    H = 20 * np.log10(np.abs(h))
-    f = w / (2 * np.pi) * circuit.fs
-    ax = plt.subplot(111)
-    ax.plot(f, H)
-    ax.semilogx(f, H, label=label, color=c)
-    plt.ylabel("Amplitude [dB]")
-    plt.xlabel("Frequency [hz]")
-    plt.title(title + "Magnitude response")
-    plt.grid()
-    plt.legend()
-
 
 
 class RCA_MK2_SEF(Circuit):
@@ -93,7 +69,7 @@ class RCA_MK2_SEF(Circuit):
         self.L_LPm2 = Inductor(self.L_LP, self.fs)
 
         self.S8 = SeriesAdaptor(self.L_LPm2, self.Rt)
-        self.C_LPm1 =Capacitor(self.C_LP, self.fs)
+        self.C_LPm1 = Capacitor(self.C_LP, self.fs)
 
         self.P4 = ParallelAdaptor(self.C_LPm1, self.S8)
         self.L_LPm1 = Inductor(self.L_LP, self.fs)
@@ -154,7 +130,7 @@ class RCA_MK2_SEF(Circuit):
         self.L_LP2.set_inductance(L)
 
     def process_sample(self, sample: float) -> float:
-        gain_db = 6
+        gain_db = 6 # factor to compensate for gain loss
         k = 10 ** (gain_db / 20)
         return k * super().process_sample(sample)
 
@@ -243,20 +219,9 @@ if __name__ == '__main__':
 
     mk2 = RCA_MK2_SEF(44100, 175, 3990)
 
-    colors = plt.cm.rainbow(np.linspace(0,1,len(mk2.LP_vals)))
-
-    # plot HP cutoff positions
-    for i, fc in enumerate(mk2.HP_vals):
-        mk2.set_highpass_cutoff(fc)
-        plot_magnitude_response(mk2, label = f'{fc} hz', c = colors[i], title= 'HPF sweep ')
-
-    plt.show()
+    mk2.plot_freqz_list(range(1,len(mk2.HP_vals)), mk2.set_highpass_knob_position, param_label='hpf knob pos')
 
     mk2.set_highpass_cutoff(170)
 
-    # plot LP cutoff positions
-    for i, fc in enumerate(mk2.LP_vals):
-        mk2.set_lowpass_cutoff(fc)
-        plot_magnitude_response(mk2, label = f'{fc} hz', c = colors[i], title= 'LPF sweep ')
+    mk2.plot_freqz_list(range(1,len(mk2.LP_vals)), mk2.set_lowpass_knob_position, param_label='lpf knob pos')
 
-    plt.show()

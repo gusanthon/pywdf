@@ -25,7 +25,7 @@ class TR_808_HatResonator(Circuit):
         self.C58 = Capacitor(.027e-6, self.fs)
         self.C59 = Capacitor(.027e-6, self.fs)
         self.R196 = Resistor(680)
-        self.R_adaptor = RootRTypeAdaptor([self.S1, self.R197, self.C58, self.C59, self.R196], self.__impedance_calc)
+        self.R_adaptor = RootRTypeAdaptor([self.S1, self.R197, self.C58, self.C59, self.R196], self._impedance_calc)
 
         self.__set_components()
 
@@ -56,7 +56,7 @@ class TR_808_HatResonator(Circuit):
             self.resonance = new_res
             self.__set_components()
 
-    def __impedance_calc(self, R: RootRTypeAdaptor) -> None:
+    def _impedance_calc(self, R: RootRTypeAdaptor) -> None:
         Ag = 100
         Ri = 1e9
         Ro = 1e-1
@@ -69,5 +69,6 @@ class TR_808_HatResonator(Circuit):
  
 
 if __name__ == '__main__':
-    hr = TR_808_HatResonator(44100,1000,.5)
-    hr.plot_freqz()
+    hr = TR_808_HatResonator(44100,1000,.4)
+    # hr.plot_freqz_list([.1,.2,.3,.4,.5,.6,.7,.8,.9], hr.set_resonance, param_label='resonance')
+    hr.AC_transient_analysis()

@@ -38,4 +38,4 @@ class PassiveLPF(Circuit):
 
 if __name__ == '__main__':
     lpf = PassiveLPF(44100, 1000)
-    lpf.plot_freqz()
+    lpf.plot_freqz_list(range(1000,10000,1000),lpf.set_cutoff,param_label='cutoff')

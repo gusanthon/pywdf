@@ -202,7 +202,7 @@ class Circuit:
         plt.show()
 
 
-    def AC_transient_analysis(self, freq: float = 1000, amplitude: float = 1, t_ms: float = 1, outpath: str = None):
+    def AC_transient_analysis(self, freq: float = 1000, amplitude: float = 1, t_ms: float = 5, outpath: str = None):
         """Plot transient analysis of Circuit's response to sine wave
 
         Args:
@@ -212,7 +212,7 @@ class Circuit:
         """
         _, ax = plt.subplots(nrows=2, ncols=1, figsize=(10, 6.5))
 
-        n_samples = int(t_ms * self.fs / 100)
+        n_samples = int(t_ms * self.fs / 1000)
 
         n = np.arange(0, 2, 1/self.fs) 
         x = np.sin(2 * np.pi * freq * n) * amplitude

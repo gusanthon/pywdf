@@ -59,3 +59,8 @@ class DiodeClipper(Circuit):
     def set_num_diodes(self, new_n_diodes: float) -> None:
         if self.Dp.n_diodes != new_n_diodes:
             self.Dp.set_diode_params(self.Dp.Is, self.Dp.Vt, new_n_diodes)
+
+if __name__ == "__main__":
+
+    dc = DiodeClipper(44100, cutoff=5000, input_gain_db=5)
+    dc.AC_transient_analysis()

@@ -1,19 +1,29 @@
 ## pywdf
-<code>pywdf</code> is a lightweight Python library for modeling and simulating wave digital filter circuits.
+<code>pywdf</code> is a Python framework for modeling and simulating wave digital filter circuits.
 
-Based on Jatin Chowdhury's C++ wdf library:  https://github.com/Chowdhury-DSP/chowdsp_wdf
+Based on Jatin Chowdhury's C++ [WDF library](https://github.com/Chowdhury-DSP/chowdsp_wdf)  
 
-Associated with master's thesis:
+Developed from work done in master thesis [Evaluating the Nonlinearities of A Diode Clipper Circuit Based on Wave Digital Filters](https://zenodo.org/record/7116075) 
+
+## Dependencies
+- [Numpy](numpy.org)
+- [Scipy](scipy.org)
+- [Matplotlib](https://matplotlib.org/)
+
+
+## Installation
+<code>pip install git+https://github.com/gusanthon/pywdf</code>
 
 ## Usage
 
-Basic wdf elements and adaptors can be found in<code>wdf.py</code>, while adapted and unadapted R-type adaptors are in <code>rtype.py</code>.  <code>circuit.py</code> contains a generic circuit class from which any wave digital circuit built using this library can inherit basic functionalities, such as  <code>process_sample</code>, <code>get_impulse_response</code>, <code>plot_freqz</code>.
+The <code>core</code> directory contains the main source code for the framework. Basic wave digital elements and series and parallel adaptors can be found in <code>wdf.py</code>, while <code>rtype.py</code> contains adapted and unadapted R-type adaptors.  <code>circuit.py</code> contains a generic circuit class from which any wave digital circuit built using this library can inherit basic functionalities, such as  <code>process_sample</code>, <code>get_impulse_response</code>, <code>plot_freqz</code>.
 
-Below is an example RC low pass filter, initialized with its components and connections, and inheriting the Circuit functionality by specifying its voltage source, the root of its connection tree, and which wave digital element to probe for the output voltage. It is equivalent to the RC low pass filter example provided in Jatin Chowdhury's C++ library above. 
+Below is an example RC low pass filter, initialized with its components and connections, and inheriting the Circuit class functionality by specifying its voltage source, the root of its connection tree, and which wave digital element to probe for the output voltage. It is equivalent to the RC low pass filter [example](https://github.com/Chowdhury-DSP/chowdsp_wdf#basic-usage) provided in Jatin Chowdhury's C++ library. 
 
 ```python
-from wdf import *
-from circuit import Circuit
+from pywdf.core.wdf import *
+from pywdf.core.circuit import *
+
 
 class RCLowPass(Circuit):
     def __init__(self, sample_rate: int, cutoff: float) -> None:
@@ -44,18 +54,22 @@ lpf.set_cutoff(2000)
 lpf.plot_freqz()
 ```
 
-See examples directory for several example circuits, including <code>DiodeClipper</code>, <code>RCA_MK2_SEF</code>, <code>TR_808_HatResonator</code>, <code>BaxandallEQ</code>. Usage:
+See examples directory for several example circuits, including <code>DiodeClipper</code>, <code>RCA_MK2_SEF</code>, <code>TR_808_HatResonator</code> and others. Usage:
+
 ```python
-from examples.diodeclipper import DiodeClipper
+import pywdf
 
-dc = DiodeClipper(sample_rate=44100)
-dc.set_input_gain(5)
-dc.set_cutoff(5000)
+# sweep positions of RCA mk2 SEF low pass filter knob and plot frequency responses
+mk2_sef = pywdf.RCA_MK2_SEF(44100, 0, 3000)
+positions = range(1,11)
+mk2_sef.plot_freqz_list(positions, mk2_sef.set_lowpass_knob_position, param_label = 'lpf knob pos')
 
-dc.plot_freqz()
+# sweep resonance values in tr 808 hat resonator and plot frequency responses
+hr = pywdf.TR_808_HatResonator(44100, 1000, .5)
+resonances = [.1,.2,.3,.4,.5,.6,.7,.8,.9]
+hr.plot_freqz_list(resonances, hr.set_resonance, param_label = 'resonance val')
 
-y = dc.process_wav('path/to/file.wav')
-
+# analyze transient response of Diode Clipper to AC signal
+dc = pywdf.DiodeClipper(44100, cutoff= 1000, input_gain_db = 5)
+dc.AC_transient_analysis()
 ```
-
-

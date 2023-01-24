@@ -10,7 +10,7 @@ setuptools.setup(
     author_email='anthon.gus1@gmail.com',
     description='A framework for wave digital filter circuits',
     long_description=long_description,
-    url= ["pywdf"],
+    url= 'https://github.com/gusanthon/pywdf',
     packages=["pywdf"],
     classifiers=[
         "Programming Language :: Python :: 3",

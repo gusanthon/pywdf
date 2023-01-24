@@ -236,7 +236,7 @@ class Circuit:
         ax[1].set_ylabel("magnitude")
         ax[1].set_title(loc = 'left', label = "output signal spectrum")
         ax[1].grid(True)
-
+        plt.tight_layout()
         if outpath:
             plt.savefig(outpath)
 

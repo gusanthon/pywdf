@@ -11,7 +11,7 @@ setuptools.setup(
     description='A framework for wave digital filter circuits',
     long_description=long_description,
     url= 'https://github.com/gusanthon/pywdf',
-    packages=[setuptools.find_packages()],
+    packages=["pywdf"],
     classifiers=[
         "Programming Language :: Python :: 3",
         "Programming Language :: Python :: 2.7",

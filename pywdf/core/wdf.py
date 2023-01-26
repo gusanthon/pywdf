@@ -38,6 +38,7 @@ class rootWDF(baseWDF):
     def __init__(self, next: baseWDF) -> None:
         baseWDF.__init__(self)
         self.next = next
+        next.connect_to_parent(self)
 
     def connect_to_parent(self, p: baseWDF) -> None:
         raise Exception("Root elements cannot be connected to a parent!")

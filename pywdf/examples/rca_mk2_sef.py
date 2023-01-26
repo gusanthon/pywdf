@@ -137,14 +137,16 @@ class RCA_MK2_SEF(Circuit):
         return k * super().process_sample(sample)
 
     def set_highpass_cutoff(self, new_cutoff):
-        C = np.sqrt(2) / (self.k * new_cutoff * 2. * np.pi)
-        L = self.k / (2. * np.sqrt(2) * new_cutoff * 2. * np.pi)
-        self._set_HP_components(C,L)
+        wc = new_cutoff * 2. * np.pi
+        self.C_HP = np.sqrt(2) / (self.k * wc)
+        self.L_HP = self.k / (2. * np.sqrt(2) * wc)
+        self._set_HP_components(self.C_HP,self.L_HP)
 
     def set_lowpass_cutoff(self, new_cutoff):
-        C = (2 * np.sqrt(2)) / (self.k * new_cutoff * 2. * np.pi)
-        L = (np.sqrt(2) * self.k) / (new_cutoff * 2. * np.pi)
-        self._set_LP_components(C,L)
+        wc = new_cutoff * 2. * np.pi
+        self.C_LP = (2 * np.sqrt(2)) / (self.k * wc)
+        self.L_LP = (np.sqrt(2) * self.k) / wc
+        self._set_LP_components(self.C_LP,self.L_LP)
 
     def set_lowpass_knob_position(self, position):
         for i, fc in enumerate(self.LP_vals):
@@ -222,9 +224,13 @@ class RCA_MK2_SEF(Circuit):
 if __name__ == '__main__':
 
     mk2 = RCA_MK2_SEF(44100, 0, 20e3)
-    # mk2.plot_freqz()
+
     vals = range(0, 6000, 1000)
     mk2.plot_freqz_list(vals, mk2.set_highpass_cutoff, 'hp cutoff')
+    
+    mk2.set_highpass_cutoff(0)
+    vals = range(1000,8000,1000)
+    mk2.plot_freqz_list(vals, mk2.set_lowpass_cutoff, 'lp cutoff')
 
     # mk2.plot_freqz_list(range(1,len(mk2.HP_vals)), mk2.set_highpass_knob_position, param_label='hpf knob pos')
 

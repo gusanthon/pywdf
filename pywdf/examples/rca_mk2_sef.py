@@ -23,7 +23,7 @@ class RCA_MK2_SEF(Circuit):
 
         self.k = 560
 
-        # C & L vals for each HP & LP fc
+        # measured C & L vals for each HP & LP knob position
 
         self.HP_vals = {
             0 : {'C' : 9999999, 'L' : 9999999},
@@ -58,14 +58,13 @@ class RCA_MK2_SEF(Circuit):
         self.Z_input = 560
         self.Z_output = 560
 
-        self.highpass_cutoff, HP_vals = self.get_closest(self.HP_vals, highpass_cutoff)
-        self.lowpass_cutoff, LP_vals = self.get_closest(self.LP_vals, lowpass_cutoff)
+        self.highpass_cutoff = highpass_cutoff
+        self.lowpass_cutoff = lowpass_cutoff
 
-        self.C_HP = HP_vals['C']
-        self.L_HP = HP_vals['L']
-
-        self.C_LP = LP_vals['C']
-        self.L_LP = LP_vals['L']
+        self.C_HP = 1e-6
+        self.L_HP = 1e-3
+        self.C_LP = 1e-6
+        self.L_LP = 1e-3
 
         self.Rt = Resistor(self.Z_output)
         self.L_LPm2 = Inductor(self.L_LP, self.fs)
@@ -109,27 +108,48 @@ class RCA_MK2_SEF(Circuit):
         self.S0 = SeriesAdaptor(self.Rin, self.S1)
         self.Vin = IdealVoltageSource(self.S0)
 
+        self.set_HP_components()
+        self.set_LP_components()
+
         super().__init__(self.Vin, self.Vin, self.Rt)
 
-    def _set_HP_components(self, C, L):
+
+    def set_HP_components(self):
+        wc = self.highpass_cutoff * 2. * np.pi
+        self.C_HP = np.sqrt(2) / (self.k * wc)
+        self.L_HP = self.k / (2. * np.sqrt(2) * wc)
+
         if self.HP_mod == True:
-            self.C_HPm1.set_capacitance(C)
-            self.C_HPm2.set_capacitance(C)
-            self.L_HPm.set_inductance(L)
+            self.C_HPm1.set_capacitance(self.C_HP)
+            self.C_HPm2.set_capacitance(self.C_HP)
+            self.L_HPm.set_inductance(self.L_LP)
+        else:
+            self.C_HPm1.set_capacitance(self.HP_vals[0]['C'])
+            self.C_HPm2.set_capacitance(self.HP_vals[0]['C'])
+            self.L_HPm.set_inductance(self.HP_vals[0]['L'])    
 
-        self.C_HP1.set_capacitance(C)
-        self.C_HP2.set_capacitance(C)
-        self.L_HP1.set_inductance(L)
-
-    def _set_LP_components(self, C, L):
-        if self.LP_mod == True:
-            self.C_LPm1.set_capacitance(C)
-            self.L_LPm1.set_inductance(L)
-            self.L_LPm2.set_inductance(L)
+        self.C_HP1.set_capacitance(self.C_HP)
+        self.C_HP2.set_capacitance(self.C_HP)
+        self.L_HP1.set_inductance(self.L_HP)
         
-        self.C_LP1.set_capacitance(C)
-        self.L_LP1.set_inductance(L)
-        self.L_LP2.set_inductance(L)
+
+    def set_LP_components(self):
+        wc = self.lowpass_cutoff * 2 * np.pi
+        self.C_LP = (2 * np.sqrt(2)) / (self.k * wc)
+        self.L_LP = (np.sqrt(2) * self.k) / wc      
+         
+        if self.HP_mod == True:
+            self.C_HPm1.set_capacitance(self.C_LP)
+            self.C_HPm2.set_capacitance(self.C_LP)
+            self.L_HPm.set_inductance(self.L_LP)
+        else:
+            self.C_LPm1.set_capacitance(self.LP_vals[999999]['C'])
+            self.L_LPm1.set_inductance(self.LP_vals[999999]['L'])
+            self.L_LPm2.set_inductance(self.LP_vals[999999]['L'])
+
+        self.C_HP1.set_capacitance(self.C_LP)
+        self.C_HP2.set_capacitance(self.C_LP)
+        self.L_HP1.set_inductance(self.L_LP)
 
     def process_sample(self, sample: float) -> float:
         gain_db = 6 # factor to compensate for gain loss
@@ -137,16 +157,12 @@ class RCA_MK2_SEF(Circuit):
         return k * super().process_sample(sample)
 
     def set_highpass_cutoff(self, new_cutoff):
-        wc = new_cutoff * 2. * np.pi
-        self.C_HP = np.sqrt(2) / (self.k * wc)
-        self.L_HP = self.k / (2. * np.sqrt(2) * wc)
-        self._set_HP_components(self.C_HP,self.L_HP)
+        self.highpass_cutoff = new_cutoff
+        self.set_HP_components()
 
     def set_lowpass_cutoff(self, new_cutoff):
-        wc = new_cutoff * 2. * np.pi
-        self.C_LP = (2 * np.sqrt(2)) / (self.k * wc)
-        self.L_LP = (np.sqrt(2) * self.k) / wc
-        self._set_LP_components(self.C_LP,self.L_LP)
+        self.lowpass_cutoff = new_cutoff
+        self.set_LP_components()
 
     def set_lowpass_knob_position(self, position):
         for i, fc in enumerate(self.LP_vals):
@@ -231,10 +247,4 @@ if __name__ == '__main__':
     mk2.set_highpass_cutoff(0)
     vals = range(1000,8000,1000)
     mk2.plot_freqz_list(vals, mk2.set_lowpass_cutoff, 'lp cutoff')
-
-    # mk2.plot_freqz_list(range(1,len(mk2.HP_vals)), mk2.set_highpass_knob_position, param_label='hpf knob pos')
-
-    # mk2.set_highpass_cutoff(170)
-
-    # mk2.plot_freqz_list(range(1,len(mk2.LP_vals)), mk2.set_lowpass_knob_position, param_label='lpf knob pos')
 

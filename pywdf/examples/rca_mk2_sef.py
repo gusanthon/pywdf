@@ -167,9 +167,9 @@ class RCA_MK2_SEF(Circuit):
     def set_lowpass_knob_position(self, position):
         for i, fc in enumerate(self.LP_vals):
             if i+1 == position:
+                self.lowpass_cutoff = fc
                 self.C_LP = self.LP_vals[fc]["C"]
                 self.L_LP = self.LP_vals[fc]['L']
-                # self._set_LP_components(self.LP_vals[fc]["C"], self.LP_vals[fc]['L'])
                 self.set_LP_components()
                 return
         print('Invalid position, positions are 1 - 11')
@@ -177,9 +177,9 @@ class RCA_MK2_SEF(Circuit):
     def set_highpass_knob_position(self, position):
         for i, fc in enumerate(self.HP_vals):
             if i+1 == position:
+                self.highpass_cutoff = fc
                 self.C_HP = self.HP_vals[fc]["C"]
                 self.L_HP = self.HP_vals[fc]["L"]
-                # self._set_HP_components(self.HP_vals[fc]["C"], self.HP_vals[fc]['L'])
                 self.set_HP_components()
                 return
         print('Invalid position, positions are 1 - 11')
@@ -247,11 +247,9 @@ if __name__ == '__main__':
 
     mk2 = RCA_MK2_SEF(44100, 0, 20e3)
 
-    # vals = range(0, 6000, 1000)
-    # mk2.plot_freqz_list(vals, mk2.set_highpass_cutoff, 'hp cutoff')
+    vals = range(0, 8000, 1000)
+    mk2.plot_freqz_list(vals, mk2.set_highpass_cutoff, 'hp cutoff')
     
-    # mk2.set_highpass_cutoff(0)
-    # vals = range(1000,8000,1000)
-    # mk2.plot_freqz_list(vals, mk2.set_lowpass_cutoff, 'lp cutoff')
-
-    # mk2.plot_freqz_list()
+    mk2.set_highpass_cutoff(0)
+    vals = range(1000,8000,1000)
+    mk2.plot_freqz_list(vals, mk2.set_lowpass_cutoff, 'lp cutoff')

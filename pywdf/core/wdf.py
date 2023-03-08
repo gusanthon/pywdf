@@ -309,8 +309,11 @@ class IdealVoltageSource(rootWDF):
     def set_voltage(self, new_V: float) -> None:
         self.Vs = new_V
 
+    def accept_incident_wave(self, a: float) -> None:
+        self.a = -a
+
     def propagate_reflected_wave(self) -> float:
-        self.b = 0 - self.a + 2 * self.Vs
+        self.b = -(-self.a + 2.0 * self.Vs)
         return self.b
 
 

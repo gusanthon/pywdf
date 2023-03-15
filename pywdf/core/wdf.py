@@ -229,9 +229,9 @@ class SeriesAdaptor(baseWDF):
         self.p1 = p1
         self.p2 = p2
         self.p1_reflect = 1
-        self.calc_impedance()
         p1.connect_to_parent(self)
         p2.connect_to_parent(self)
+        self.calc_impedance()
 
     def calc_impedance(self) -> None:
         self.Rp = self.p1.Rp + self.p2.Rp
@@ -310,10 +310,10 @@ class IdealVoltageSource(rootWDF):
         self.Vs = new_V
 
     def accept_incident_wave(self, a: float) -> None:
-        self.a = -a
+        self.a = a
 
     def propagate_reflected_wave(self) -> float:
-        self.b = -(-self.a + 2.0 * self.Vs)
+        self.b = -self.a + 2.0 * self.Vs
         return self.b
 
 

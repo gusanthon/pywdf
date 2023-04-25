@@ -32,23 +32,30 @@ The <code>core</code> directory contains the main source code of the repository.
 ## Usage
 
 ```python
-from pywdf import RCA_MK2_SEF, TR_808_HatResonator, DiodeClipper
+from pywdf import RCA_MK2_SEF, DiodeClipper, TR_808_HatResonator,
 
 # sweep positions of RCA mk2 SEF low pass filter knob and plot frequency responses
 mk2_sef = RCA_MK2_SEF(44100, 0, 3000)
 positions = range(1,11)
 mk2_sef.plot_freqz_list(positions, mk2_sef.set_lowpass_knob_position, param_label = 'lpf knob pos')
+```
+![RCA MK2 SEF LPF knob positions](pywdf/figures/mk2_sef_lpf_knob.png)
 
-# sweep resonance values in tr 808 hat resonator and plot frequency responses
-hr = TR_808_HatResonator(44100, 1000, .5)
-resonances = [.1,.2,.3,.4,.5,.6,.7,.8,.9]
-hr.plot_freqz_list(resonances, hr.set_resonance, param_label = 'resonance val')
-
+```python
 # analyze transient response of Diode Clipper to AC signal
 dc = DiodeClipper(44100, cutoff= 1000, input_gain_db = 5)
 dc.AC_transient_analysis()
-
 ```
+![Diode Clipper AC Transient analysis](pywdf/figures/diode_clipper_transient_anal.png)
+
+```python
+# visualize impulse response of TR-808 hat resonator
+hr = TR_808_HatResonator(44100, 1000, .5)
+hr.plot_impulse_response(outpath='pywdf/figures/hat_res_IR.png')
+```
+![TR 808 Hat Resonator Impulse Response](pywdf/figures/hat_res_IR.png)
+
+
 
 ## Contributions
 

@@ -259,7 +259,7 @@ class Circuit:
         ax[0].set_xlabel("sample")
         ax[0].set_ylabel("amplitude")
         ax[0].set_title(loc="left", label="output signal vs input signal waveforms")
-
+        ax[0].grid(True)
         ax[0].legend()
 
         N = len(n)

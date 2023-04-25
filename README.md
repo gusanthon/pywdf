@@ -6,7 +6,7 @@
 pip install git+https://github.com/gusanthon/pywdf
 ```
 
-## Structure:
+## Structure
 The <code>core</code> directory contains the main source code of the repository. Basic WDF elements and adaptors are contained in <code>wdf.py</code>, adapted and unadapted R-Type adaptors are contained in <code>rtype.py</code>, and the circuit class and functionalities for examples are contained in <code>circuit.py</code>.
 ```
 ├── pywdf

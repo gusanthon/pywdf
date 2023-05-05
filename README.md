@@ -32,7 +32,7 @@ The <code>core</code> directory contains the main source code of the repository.
 ## Usage
 
 ```python
-from pywdf import RCA_MK2_SEF, DiodeClipper, TR_808_HatResonator,
+from pywdf import RCA_MK2_SEF, DiodeClipper, TR_808_HatResonator
 
 # sweep positions of RCA mk2 SEF low pass filter knob and plot frequency responses
 mk2_sef = RCA_MK2_SEF(44100, 0, 3000)

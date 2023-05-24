@@ -79,6 +79,16 @@ class Circuit:
         d = np.zeros(int(delta_dur * self.fs))
         d[0] = amp
         return self.process_signal(d)
+    
+    def plot_impulse_response(self, n_samples: int = 500, outpath: str = None, delta_dur: float = 1, amp: float = 1) -> None:
+        plt.plot(self.get_impulse_response(delta_dur, amp)[:n_samples])
+        plt.xlabel('Sample [n]')
+        plt.ylabel('Amplitude [V]')
+        plt.title(f'{self.__class__.__name__} impulse response')
+        plt.grid()
+        if outpath:
+            plt.savefig(outpath)
+        plt.show()
 
     def set_sample_rate(self, new_fs: float) -> None:
         """Change system's sample rate
@@ -249,7 +259,7 @@ class Circuit:
         ax[0].set_xlabel("sample")
         ax[0].set_ylabel("amplitude")
         ax[0].set_title(loc="left", label="output signal vs input signal waveforms")
-
+        ax[0].grid(True)
         ax[0].legend()
 
         N = len(n)

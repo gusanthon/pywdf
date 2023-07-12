@@ -81,10 +81,12 @@ class Circuit:
         return self.process_signal(d)
     
     def plot_impulse_response(self, n_samples: int = 500, outpath: str = None, delta_dur: float = 1, amp: float = 1) -> None:
+        plt.figure(figsize=(9, 5.85))
         plt.plot(self.get_impulse_response(delta_dur, amp)[:n_samples])
         plt.xlabel('Sample [n]')
         plt.ylabel('Amplitude [V]')
         plt.title(f'{self.__class__.__name__} impulse response')
+
         plt.grid()
         if outpath:
             plt.savefig(outpath)

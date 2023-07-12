@@ -6,7 +6,7 @@ with open("README.md", "r") as fh:
 setuptools.setup(
     name="pywdf",
     version="0.0.1",
-    author="Gustav Anthon",
+    author="Gustav Anthon, Xavier Lizarraga",
     author_email="anthon.gus1@gmail.com",
     description="A framework for wave digital filter circuits",
     long_description=long_description,

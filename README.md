@@ -60,10 +60,6 @@ hr.plot_impulse_response(outpath='pywdf/figures/hat_res_IR.png')
 ![TR 808 Hat Resonator Impulse Response](pywdf/figures/hat_res_IR.png)
 
 
-## Contributions
-We welcome contributions to this project from anyone interested in helping out. If you notice a bug or would like to request a new feature, please open an Issue and we'll take a look as soon as possible.
-
-
 ## Citation
 If you use this library for WDF prototyping, please cite the DAFx23 conference paper using the following reference:
 ```
@@ -78,8 +74,12 @@ Developed from work done in master thesis [Evaluating the Nonlinearities of A Di
 
 For further reading, check out:
 
-- [Alfred Fettweis, "Wave Digital Filters: Theory and Practice", 1986, IEEE Invited Paper](https://ieeexplore.ieee.org/stamp/stamp.jsp?arnumber=1457726)  
-- [Kurt Werner, "Virtual Analog Modeling of Audio Circuitry Using Wave Digital Filters", PhD. Dissertation, Stanford University, 2016](https://stacks.stanford.edu/file/druid:jy057cz8322/KurtJamesWernerDissertation-augmented.pdf)  
-- [Giovanni De Sanctis and Augusto Sarti, “Virtual analog modeling in the wave-digital domain,” IEEE transactions on audio, speech, and language processing, vol. 18, no. 4, pp. 715–727, 2009.](https://ieeexplore.ieee.org/abstract/document/5276845)
-- [Kurt James Werner, Vaibhav Nangia, Julius O Smith, and Jonathan S Abel, “A general and explicit formulation for wave digital filters with multiple/multiport nonlinearities and complicated topologies,” IEEE, 2015, pp. 1–5.](https://ieeexplore.ieee.org/document/7336908)
-- [D. Franken, Jörg Ochs, and Karlheinz Ochs, “Generation of wave digital structures for networks containing multiport elements,” Circuits and Systems I: Regular Papers, IEEE Transactions on, vol. 52, pp. 586 – 596, 04 2005.](https://www.researchgate.net/publication/4018571_Generation_of_wave_digital_structures_for_connection_networks_containing_ideal_transformers)
+- Alfred Fettweis, "Wave Digital Filters: Theory and Practice", 1986, IEEE Invited Paper [URL](https://ieeexplore.ieee.org/stamp/stamp.jsp?arnumber=1457726)  
+- Kurt Werner, "Virtual Analog Modeling of Audio Circuitry Using Wave Digital Filters", PhD. Dissertation, Stanford University, 2016 [URL](https://stacks.stanford.edu/file/druid:jy057cz8322/KurtJamesWernerDissertation-augmented.pdf)  
+- Giovanni De Sanctis and Augusto Sarti, “Virtual analog modeling in the wave-digital domain,” IEEE transactions on audio, speech, and language processing, vol. 18, no. 4, pp. 715–727, 2009.[URL](https://ieeexplore.ieee.org/abstract/document/5276845)
+- Kurt James Werner, Vaibhav Nangia, Julius O Smith, and Jonathan S Abel, “A general and explicit formulation for wave digital filters with multiple/multiport nonlinearities and complicated topologies,” IEEE, 2015, pp. 1–5.[URL](https://ieeexplore.ieee.org/document/7336908)
+- D. Franken, Jörg Ochs, and Karlheinz Ochs, “Generation of wave digital structures for networks containing multiport elements,” Circuits and Systems I: Regular Papers, IEEE Transactions on, vol. 52, pp. 586 – 596, 04 2005.[URL](https://www.researchgate.net/publication/4018571_Generation_of_wave_digital_structures_for_connection_networks_containing_ideal_transformers)
+
+
+## Contributions
+We welcome contributions to this project from anyone interested in helping out. If you notice a bug or would like to request a new feature, please open an Issue and we'll take a look as soon as possible.

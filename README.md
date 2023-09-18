@@ -60,12 +60,11 @@ hr.plot_impulse_response(outpath='pywdf/figures/hat_res_IR.png')
 ![TR 808 Hat Resonator Impulse Response](pywdf/figures/hat_res_IR.png)
 
 
-
 ## Contributions
-
 We welcome contributions to this project from anyone interested in helping out. If you notice a bug or would like to request a new feature, please open an Issue and we'll take a look as soon as possible.
 
-## Citation
+
+## Citation
 If you use this library for WDF prototyping, please cite the DAFx23 conference paper using the following reference:
 ```
 Anthon G, Lizarraga-Seijas X, Font F. PYWDF: an open source library for prototyping and simulating wave filter circuits in Python. In: Fontana F, Willemsen S, editors. Proceedings of the 26th International Conference on Digital Audio Effects (DAFx-23); 2023 Sep 4-7; Copenhagen, Denmark. [Copenhagen]: [Aalborg University]; 2023. p. 335-341.

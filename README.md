@@ -57,6 +57,7 @@ hr.plot_impulse_response(outpath='pywdf/figures/hat_res_IR.png')
 ```
 ![TR 808 Hat Resonator Impulse Response](pywdf/figures/hat_res_IR.png)
 
+Here there is a [collab tutorial](https://colab.research.google.com/drive/1bfgziD84lgcbKcin0sw5IwgwcT32akRd?usp=sharing) to show you some examples of usage.
 
 ## Citation
 If you use this library for WDF prototyping, please cite the [DAFx23 conference paper](https://repositori.upf.edu/handle/10230/57903) using the following reference:

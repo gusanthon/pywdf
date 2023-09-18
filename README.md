@@ -1,6 +1,4 @@
 # pywdf
-[Gustav Anthon](https://github.com/gusanthon) and [Xavier Lizarraga-Seijas](https://github.com/xaviliz)
-
 [**DAFX23 paper**](https://repositori.upf.edu/handle/10230/57903)
 
 <code>pywdf</code> is a Python framework for modeling and simulating wave digital filter circuits. It allows users to easily create and analyze WDF circuit models in a high-level, object-oriented manner. The library includes a variety of built-in components, such as voltage sources, capacitors, diodes etc., as well as the ability to create custom components and circuits. Additionally, pywdf includes a variety of analysis tools, such as frequency response and transient analysis, to aid in the design and optimization of WDF circuits. Also included are several example circuits as shown below. 
@@ -61,7 +59,7 @@ hr.plot_impulse_response(outpath='pywdf/figures/hat_res_IR.png')
 
 
 ## Citation
-If you use this library for WDF prototyping, please cite the DAFx23 conference paper using the following reference:
+If you use this library for WDF prototyping, please cite the [DAFx23 conference paper](https://repositori.upf.edu/handle/10230/57903) using the following reference:
 ```
 Anthon G, Lizarraga-Seijas X, Font F. PYWDF: an open source library for prototyping and simulating wave filter circuits in Python. In: Fontana F, Willemsen S, editors. Proceedings of the 26th International Conference on Digital Audio Effects (DAFx-23); 2023 Sep 4-7; Copenhagen, Denmark. [Copenhagen]: [Aalborg University]; 2023. p. 335-341.
 ```

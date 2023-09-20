@@ -62,7 +62,23 @@ Here there is a [collab tutorial](https://colab.research.google.com/drive/1bfgzi
 ## Citation
 If you use this library for WDF prototyping, please cite the [DAFx23 conference paper](https://repositori.upf.edu/handle/10230/57903) using the following reference:
 ```
-Anthon G, Lizarraga-Seijas X, Font F. PYWDF: an open source library for prototyping and simulating wave filter circuits in Python. In: Fontana F, Willemsen S, editors. Proceedings of the 26th International Conference on Digital Audio Effects (DAFx-23); 2023 Sep 4-7; Copenhagen, Denmark. [Copenhagen]: [Aalborg University]; 2023. p. 335-341.
+@article{anthon_pywdf_2023,
+	title = {{PYWDF}: an open source library for prototyping and simulating wave filter circuits in {Python}},
+	copyright = {© 2023 Gustav Anthon, Xavier Lizarraga-Seijas and Frederic Font. This is an open-access article distributed under the terms of the Creative Commons Attribution 4.0 International License, which permits unrestricted use, distribution, adaptation, and reproduction in any medium, provided the original author and source arecredited.},
+	issn = {2413-6689},
+	shorttitle = {{PYWDF}},
+	url = {http://repositori.upf.edu/handle/10230/57903},
+	abstract = {This paper introduces a new open-source Python library for the modeling and simulation of wave digital filter (WDF) circuits. The library, called pwydf, allows users to easily create and analyze 
+WDF circuit models in a high-level, object-oriented manner. The library includes a variety of built-in components, such as voltage sources, capacitors, diodes etc., as well as the ability to create custom components and circuits. Additionally, pywdf includes a variety of analysis tools, such as frequency response and transient 
+analysis, to aid in the design and optimization of WDF circuits. We demonstrate the library’s efficacy in replicating the nonlinear behavior of an analog diode clipper circuit, and in creating an allpass filter that cannot be realized in the analog world. The library is well-documented and includes several examples to help users get started. Overall, pywdf is a powerful tool for anyone working with WDF circuits, and we hope it can be of great use to researchers and engineers in the field.},
+	language = {eng},
+	urldate = {2023-09-20},
+	author = {Anthon, Gustav and Lizarraga Seijas, Xavier and Font Corbera, Frederic},
+	year = {2023},
+	note = {Accepted: 2023-09-18T12:02:53Z
+Publisher: Aalborg University Copenhagen},
+	file = {Full Text PDF:files/189/Anthon et al. - 2023 - PYWDF an open source library for prototyping and .pdf:application/pdf},
+}
 ```
 
 ## For more information

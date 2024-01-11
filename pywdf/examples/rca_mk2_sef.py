@@ -119,37 +119,41 @@ class RCA_MK2_SEF(Circuit):
         self.C_HP = np.sqrt(2) / (self.k * wc)
         self.L_HP = self.k / (2. * np.sqrt(2) * wc)
 
-        if self.HP_mod == True:
-            self.C_HPm1.set_capacitance(self.C_HP)
-            self.C_HPm2.set_capacitance(self.C_HP)
-            self.L_HPm.set_inductance(self.C_HP)
-        else:
-            self.C_HPm1.set_capacitance(self.HP_vals[0]['C'])
-            self.C_HPm2.set_capacitance(self.HP_vals[0]['C'])
-            self.L_HPm.set_inductance(self.HP_vals[0]['L'])    
-
         self.C_HP1.set_capacitance(self.C_HP)
         self.C_HP2.set_capacitance(self.C_HP)
         self.L_HP1.set_inductance(self.L_HP)
+        
+        if self.HP_mod == False:
+            wc = 1e-8
+            self.C_HP = np.sqrt(2) / (self.k * wc)
+            self.L_HP = self.k / (2 * np.sqrt(2) * wc)
+
+        self.C_HPm1.set_capacitance(self.C_HP)
+        self.C_HPm2.set_capacitance(self.C_HP)
+        self.L_HPm.set_inductance(self.C_HP)
         
 
     def set_LP_components(self):
         wc = self.lowpass_cutoff * 2 * np.pi
         self.C_LP = (2 * np.sqrt(2)) / (self.k * wc)
         self.L_LP = (np.sqrt(2) * self.k) / wc      
-         
-        if self.HP_mod == True:
-            self.C_HPm1.set_capacitance(self.C_LP)
-            self.C_HPm2.set_capacitance(self.C_LP)
-            self.L_HPm.set_inductance(self.L_LP)
-        else:
-            self.C_LPm1.set_capacitance(self.LP_vals[999999]['C'])
-            self.L_LPm1.set_inductance(self.LP_vals[999999]['L'])
-            self.L_LPm2.set_inductance(self.LP_vals[999999]['L'])
-
+        
         self.C_HP1.set_capacitance(self.C_LP)
         self.C_HP2.set_capacitance(self.C_LP)
         self.L_HP1.set_inductance(self.L_LP)
+         
+        if self.HP_mod == False:
+            wc = 1e8
+            self.C_LP = (2 * np.sqrt(2)) / (self.k * wc)
+            self.L_LP = (np.sqrt(2) * self.k) / wc
+
+        # else:
+        #     self.C_LPm1.set_capacitance(self.LP_vals[999999]['C'])
+        #     self.L_LPm1.set_inductance(self.LP_vals[999999]['L'])
+        #     self.L_LPm2.set_inductance(self.LP_vals[999999]['L'])
+        self.C_HPm1.set_capacitance(self.C_LP)
+        self.C_HPm2.set_capacitance(self.C_LP)
+        self.L_HPm.set_inductance(self.L_LP)
 
     def process_sample(self, sample: float) -> float:
         gain_db = 6 # factor to compensate for gain loss
@@ -245,7 +249,7 @@ class RCA_MK2_SEF(Circuit):
 
 if __name__ == '__main__':
 
-    mk2 = RCA_MK2_SEF(44100, 0, 20e3)
+    mk2 = RCA_MK2_SEF(44100, 20, 20e3)
 
     vals = range(0, 8000, 1000)
     mk2.plot_freqz_list(vals, mk2.set_highpass_cutoff, 'hp cutoff')

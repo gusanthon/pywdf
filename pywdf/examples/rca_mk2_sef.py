@@ -122,7 +122,7 @@ class RCA_MK2_SEF(Circuit):
         if self.HP_mod == True:
             self.C_HPm1.set_capacitance(self.C_HP)
             self.C_HPm2.set_capacitance(self.C_HP)
-            self.L_HPm.set_inductance(self.L_LP)
+            self.L_HPm.set_inductance(self.C_HP)
         else:
             self.C_HPm1.set_capacitance(self.HP_vals[0]['C'])
             self.C_HPm2.set_capacitance(self.HP_vals[0]['C'])

@@ -18,8 +18,8 @@ class RCA_MK2_SEF(Circuit):
 
         # mod switches engaged by default
 
-        self.LP_mod = True
-        self.HP_mod = True
+        self.lowpass_mod = True
+        self.highpass_mod = True
 
         self.k = 560
 
@@ -123,7 +123,7 @@ class RCA_MK2_SEF(Circuit):
         self.C_HP2.set_capacitance(self.C_HP)
         self.L_HP1.set_inductance(self.L_HP)
         
-        if self.HP_mod == False:
+        if self.highpass_mod == False:
             wc = 1e-8
             self.C_HP = np.sqrt(2) / (self.k * wc)
             self.L_HP = self.k / (2 * np.sqrt(2) * wc)
@@ -137,20 +137,16 @@ class RCA_MK2_SEF(Circuit):
         wc = self.lowpass_cutoff * 2 * np.pi
         self.C_LP = (2 * np.sqrt(2)) / (self.k * wc)
         self.L_LP = (np.sqrt(2) * self.k) / wc      
-        
+
         self.C_HP1.set_capacitance(self.C_LP)
         self.C_HP2.set_capacitance(self.C_LP)
         self.L_HP1.set_inductance(self.L_LP)
          
-        if self.HP_mod == False:
+        if self.set_lowpass_mod == False:
             wc = 1e8
             self.C_LP = (2 * np.sqrt(2)) / (self.k * wc)
             self.L_LP = (np.sqrt(2) * self.k) / wc
 
-        # else:
-        #     self.C_LPm1.set_capacitance(self.LP_vals[999999]['C'])
-        #     self.L_LPm1.set_inductance(self.LP_vals[999999]['L'])
-        #     self.L_LPm2.set_inductance(self.LP_vals[999999]['L'])
         self.C_HPm1.set_capacitance(self.C_LP)
         self.C_HPm2.set_capacitance(self.C_LP)
         self.L_HPm.set_inductance(self.L_LP)
@@ -168,68 +164,16 @@ class RCA_MK2_SEF(Circuit):
         self.lowpass_cutoff = new_cutoff
         self.set_LP_components()
 
-    def set_lowpass_knob_position(self, position):
-        for i, fc in enumerate(self.LP_vals):
-            if i+1 == position:
-                self.lowpass_cutoff = fc
-                self.C_LP = self.LP_vals[fc]["C"]
-                self.L_LP = self.LP_vals[fc]['L']
-                self.set_LP_components()
-                return
-        print('Invalid position, positions are 1 - 11')
+    def set_highpass_mod(self, mod):
+        if self.highpass_mod != mod:
+            self.highpass_mod = mod
+            self.set_HP_components()
 
-    def set_highpass_knob_position(self, position):
-        for i, fc in enumerate(self.HP_vals):
-            if i+1 == position:
-                self.highpass_cutoff = fc
-                self.C_HP = self.HP_vals[fc]["C"]
-                self.L_HP = self.HP_vals[fc]["L"]
-                self.set_HP_components()
-                return
-        print('Invalid position, positions are 1 - 11')
-
-    def engage_HP_mod(self):
-        if self.HP_mod == True:
-            print('HP mod already engaged')
-            return
-        self.HP_mod = True
-        self.C_HPm1.set_capacitance(self.HP_vals[self.highpass_cutoff]['C']) 
-        self.C_HPm2.set_capacitance(self.HP_vals[self.highpass_cutoff]['C'])
-        self.L_HPm.set_inductance(self.HP_vals[self.highpass_cutoff]['L'])
-
-    def engage_LP_mod(self):
-        if self.LP_mod == True:
-            print('LP mod already engaged')
-            return
-        self.LP_mod = True
-        self.L_LPm1.set_inductance(self.LP_vals[self.lowpass_cutoff]['L'])
-        self.L_LPm2.set_inductance(self.LP_vals[self.lowpass_cutoff]['L'])
-        self.C_LPm1.set_capacitance(self.LP_vals[self.lowpass_cutoff]['C'])
-
-    def disengage_LP_mod(self):
-        if self.LP_mod == False:
-            print('LP mod already disengaged')
-            return
-        self.LP_mod = False
-        self.L_LPm1.set_inductance(self.LP_vals[999999]['L'])
-        self.L_LPm2.set_inductance(self.LP_vals[999999]['L'])
-        self.C_LPm1.set_capacitance(self.LP_vals[999999]['C'])
-
-    def disengage_HP_mod(self):
-        if self.HP_mod == False:
-            print('HP mod already disengaged')
-            return
-        self.HP_mod = False
-        self.C_HPm1.set_capacitance(self.HP_vals[0]['C']) 
-        self.C_HPm2.set_capacitance(self.HP_vals[0]['C'])
-        self.L_HPm.set_inductance(self.HP_vals[0]['L'])
-
-    def toggle_LP_mod(self):
-        self.disengage_LP_mod() if self.LP_mod else self.engage_LP_mod()
-
-    def toggle_HP_mod(self):
-        self.disengage_HP_mod() if self.HP_mod else self.engage_HP_mod()
-
+    def set_lowpass_mod(self, mod):
+        if self.set_lowpass_mod != mod:
+            self.lowpass_mod = mod
+            self.set_LP_components()
+            
     def set_Z_input(self, new_Z):
         if self.Z_input != new_Z:
             self.Z_input = new_Z

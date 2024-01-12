@@ -16,10 +16,10 @@ class RCA_MK2_SEF(Circuit):
     
     def __init__(self, sample_rate: int, highpass_cutoff: float, lowpass_cutoff: float) -> None:
 
-        # mod switches engaged by default
+        # mod switches disabled by default
 
-        self.lowpass_mod = True
-        self.highpass_mod = True
+        self.lowpass_mod = False
+        self.highpass_mod = False
 
         self.k = 560
 
@@ -194,8 +194,7 @@ class RCA_MK2_SEF(Circuit):
 if __name__ == '__main__':
 
     mk2 = RCA_MK2_SEF(44100, 20, 20e3)
-    mk2.set_highpass_mod(0)
-    mk2.set_lowpass_mod(0)
+
     vals = range(0, 8000, 1000)
     mk2.plot_freqz_list(vals, mk2.set_highpass_cutoff, 'hp cutoff')
     

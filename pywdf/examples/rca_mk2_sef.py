@@ -173,7 +173,7 @@ class RCA_MK2_SEF(Circuit):
         if self.set_lowpass_mod != mod:
             self.lowpass_mod = mod
             self.set_LP_components()
-            
+
     def set_Z_input(self, new_Z):
         if self.Z_input != new_Z:
             self.Z_input = new_Z
@@ -194,7 +194,8 @@ class RCA_MK2_SEF(Circuit):
 if __name__ == '__main__':
 
     mk2 = RCA_MK2_SEF(44100, 20, 20e3)
-
+    mk2.set_highpass_mod(0)
+    mk2.set_lowpass_mod(0)
     vals = range(0, 8000, 1000)
     mk2.plot_freqz_list(vals, mk2.set_highpass_cutoff, 'hp cutoff')
     

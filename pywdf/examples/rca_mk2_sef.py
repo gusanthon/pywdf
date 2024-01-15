@@ -11,6 +11,48 @@ from core.wdf import *
 from core.rtype import *
 from core.circuit import Circuit
 
+class HighPassStage:
+
+    def __init__(self, connection, fs = 44100, C_HP = 1e-6, L_HP = 1e-3, k = 560):
+
+        self.C_HP = C_HP
+        self.L_HP = L_HP
+        self.fs = fs
+        self.k = k
+
+        self.C_HP2 = Capacitor(self.C_HP, self.fs)
+        self.S4 = SeriesAdaptor(self.C_HP2, connection)
+        self.L_HP1 = Inductor(self.L_HP, self.fs)
+
+        self.P2 = ParallelAdaptor(self.L_HP1, self.S4)
+        self.C_HP1 = Capacitor(self.C_HP, self.fs)
+
+        self.S3 = SeriesAdaptor(self.C_HP1, self.P2)
+        self.C_HPm2 = Capacitor(self.C_HP, self.fs)
+
+        self.S2 = SeriesAdaptor(self.C_HPm2, self.S3)
+        self.L_HPm = Inductor(self.L_HP, self.fs)
+
+        self.P1 = ParallelAdaptor(self.L_HPm, self.S2)
+        self.C_HPm1 = Capacitor(self.C_HP, self.fs)
+
+        self.S0 = SeriesAdaptor(self.P1, self.C_HPm1)
+
+    def set_components(self, C_HP, L_HP, HP_mod, k):
+
+        self.C_HP1.set_capacitance(C_HP)
+        self.C_HP2.set_capacitance(C_HP)
+        self.L_HP1.set_inductance(L_HP)
+
+        if HP_mod == False:
+            wc = 1e-8
+            C_HP = np.sqrt(2) / (self.k * wc)
+            L_HP = (np.sqrt(2) * self.k) / wc
+
+        self.C_HPm1.set_capacitance(C_HP)
+        self.C_HPm2.set_capacitance(C_HP)
+        self.L_HPm.set_inductance(L_HP)
+
 
 class RCA_MK2_SEF(Circuit):
     
@@ -184,20 +226,12 @@ class RCA_MK2_SEF(Circuit):
             self.Z_output = new_Z
             self.Rt.set_resistance(new_Z)
 
-    def get_closest(self, d, search_key):
-        if d.get(search_key):
-            return search_key, d[search_key]
-        key = min(d.keys(), key=lambda key: abs(key - search_key))
-        return key, d[key]
 
 
 if __name__ == '__main__':
 
     mk2 = RCA_MK2_SEF(44100, 20, 20e3)
 
-    vals = range(0, 8000, 1000)
-    mk2.plot_freqz_list(vals, mk2.set_highpass_cutoff, 'hp cutoff')
-    
-    mk2.set_highpass_cutoff(0)
-    vals = range(1000,8000,1000)
-    mk2.plot_freqz_list(vals, mk2.set_lowpass_cutoff, 'lp cutoff')
+    zs = range(1000, 50000, 5000)
+    mk2.plot_freqz_list(zs, mk2.set_Z_input, "Z ouput")
+

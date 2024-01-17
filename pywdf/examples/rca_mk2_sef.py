@@ -165,6 +165,15 @@ class RCA_MK2_SEF(Circuit):
         self.num_HP_stages = 1
         self.num_LP_stages = 1 
 
+        self.build_circuit()
+
+
+    def build_circuit(self): 
+
+        # LOW PASS STAGES
+        first_stage = LowPassStage(self.Rt, self.fs, self.C_LP, self.L_LP, self.k)
+        self.LP_stages = [first_stage]
+
         for i in range(1, self.num_LP_stages):
             connection = self.LP_stages[i - 1].S5
             stage = LowPassStage(connection, self.fs, self.C_LP, self.L_LP, self.k)
@@ -193,6 +202,8 @@ class RCA_MK2_SEF(Circuit):
         self.set_LP_components()
 
         super().__init__(self.Vin, self.Vin, self.Rt)
+
+
 
     def set_num_LP_stages(self, nstages):
         assert nstages > 0
@@ -263,6 +274,5 @@ if __name__ == '__main__':
     mk2 = RCA_MK2_SEF(44100, 20, 20e3)
 
     zs = range(1000, 50000, 5000)
-    # mk2.plot_freqz_list(zs, mk2.set_Z_input, "Z ouput")
-    mk2.plot_freqz_list(range(1,10), )
+    mk2.plot_freqz_list(range(1,10), mk2.set_num_LP_stages, "num LP stages")
 

@@ -175,28 +175,25 @@ class RCA_MK2_SEF(Circuit):
         self.S6 = SeriesAdaptor(self.L_LP2, self.S7)
         self.C_LP1 = Capacitor(self.C_LP, self.fs)
 
-        self.P3 = ParallelAdaptor(self.C_LP1, self.S6)
-        self.L_LP1 = Inductor(self.L_LP, self.fs)
-
-        self.S5 = SeriesAdaptor(self.L_LP1, self.P3)
-        self.C_HP2 = Capacitor(self.C_HP, self.fs)
-
-        self.S4 = SeriesAdaptor(self.C_HP2, self.S5)
-        self.L_HP1 = Inductor(self.L_HP, self.fs)
-
-        self.P2 = ParallelAdaptor(self.L_HP1, self.S4)
-        self.C_HP1 = Capacitor(self.C_HP, self.fs)
-
-        self.S3 = SeriesAdaptor(self.C_HP1, self.P2)
-        self.C_HPm2 = Capacitor(self.C_HP, self.fs)
+        for i in range(1, self.num_LP_stages):
+            connection = self.LP_stages[i - 1].S5
+            stage = LowPassStage(connection, self.fs, self.C_LP, self.L_LP, self.k)
+            self.LP_stages.append(stage)
         
-        self.S2 = SeriesAdaptor(self.C_HPm2, self.S3)
-        self.L_HPm = Inductor(self.L_LP, self.fs)
+        self.S8 = SeriesAdaptor(self.LP_stages[-1].L_LPm2, self.Rt) 
 
-        self.P1 = ParallelAdaptor(self.L_HPm, self.S2)
-        self.C_HPm1 = Capacitor(self.C_HP, self.fs)
+        # HIGH PASS STAGES
+        connection = self.LP_stages[-1].S5
+        first_stage = HighPassStage(connection, fs = self.fs, C_HP = self.C_HP, L_HP = self.L_HP, k = self.k)
+        self.HP_stages = [first_stage]
 
-        self.S1 = SeriesAdaptor(self.C_HPm1, self.P1)
+        for i in range(1, self.num_HP_stages):
+            connection = self.HP_stages[i - 1].S0
+            stage = HighPassStage(connection, fs = self.fs, C_HP = self.C_HP, L_HP = self.L_HP, k = self.k)
+            self.HP_stages.append(stage)
+
+        # INPUT STAGE
+        self.S1 = SeriesAdaptor(self.HP_stages[-1].C_HPm1, self.HP_stages[-1].P1)
         self.Rin = Resistor(self.Z_input)
 
         self.S0 = SeriesAdaptor(self.Rin, self.S1)
@@ -213,37 +210,18 @@ class RCA_MK2_SEF(Circuit):
         self.C_HP = np.sqrt(2) / (self.k * wc)
         self.L_HP = self.k / (2. * np.sqrt(2) * wc)
 
-        self.C_HP1.set_capacitance(self.C_HP)
-        self.C_HP2.set_capacitance(self.C_HP)
-        self.L_HP1.set_inductance(self.L_HP)
-        
-        if self.highpass_mod == False:
-            wc = 1e-8
-            self.C_HP = np.sqrt(2) / (self.k * wc)
-            self.L_HP = self.k / (2 * np.sqrt(2) * wc)
+        for stage in self.HP_stages:
+            stage.set_components(self.C_HP, self.L_HP, self.highpass_mod, self.k)
 
-        self.C_HPm1.set_capacitance(self.C_HP)
-        self.C_HPm2.set_capacitance(self.C_HP)
-        self.L_HPm.set_inductance(self.C_HP)
         
-
     def set_LP_components(self):
         wc = self.lowpass_cutoff * 2 * np.pi
         self.C_LP = (2 * np.sqrt(2)) / (self.k * wc)
-        self.L_LP = (np.sqrt(2) * self.k) / wc      
+        self.L_LP = (np.sqrt(2) * self.k) / wc
 
-        self.C_HP1.set_capacitance(self.C_LP)
-        self.C_HP2.set_capacitance(self.C_LP)
-        self.L_HP1.set_inductance(self.L_LP)
-         
-        if self.set_lowpass_mod == False:
-            wc = 1e8
-            self.C_LP = (2 * np.sqrt(2)) / (self.k * wc)
-            self.L_LP = (np.sqrt(2) * self.k) / wc
+        for stage in self.LP_stages:
+            stage.set_components(self.C_LP, self.L_LP, self.lowpass_mod, self.k)
 
-        self.C_HPm1.set_capacitance(self.C_LP)
-        self.C_HPm2.set_capacitance(self.C_LP)
-        self.L_HPm.set_inductance(self.L_LP)
 
     def process_sample(self, sample: float) -> float:
         gain_db = 6 # factor to compensate for gain loss

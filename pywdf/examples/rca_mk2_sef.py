@@ -161,19 +161,9 @@ class RCA_MK2_SEF(Circuit):
         self.L_LP = 1e-3
 
         self.Rt = Resistor(self.Z_output)
-        self.L_LPm2 = Inductor(self.L_LP, self.fs)
 
-        self.S8 = SeriesAdaptor(self.L_LPm2, self.Rt)
-        self.C_LPm1 = Capacitor(self.C_LP, self.fs)
-
-        self.P4 = ParallelAdaptor(self.C_LPm1, self.S8)
-        self.L_LPm1 = Inductor(self.L_LP, self.fs)
-
-        self.S7 = SeriesAdaptor(self.L_LPm1, self.P4)
-        self.L_LP2 = Inductor(self.L_LP, self.fs)
-
-        self.S6 = SeriesAdaptor(self.L_LP2, self.S7)
-        self.C_LP1 = Capacitor(self.C_LP, self.fs)
+        self.num_HP_stages = 1
+        self.num_LP_stages = 1 
 
         for i in range(1, self.num_LP_stages):
             connection = self.LP_stages[i - 1].S5
@@ -203,6 +193,16 @@ class RCA_MK2_SEF(Circuit):
         self.set_LP_components()
 
         super().__init__(self.Vin, self.Vin, self.Rt)
+
+    def set_num_LP_stages(self, nstages):
+        assert nstages > 0
+        self.num_LP_stages = nstages
+        self.build_circuit()
+
+    def set_num_HP_stages(self, nstages):
+        assert nstages > 0
+        self.num_HP_stages = nstages
+        self.build_circuit()
 
 
     def set_HP_components(self):
@@ -263,5 +263,6 @@ if __name__ == '__main__':
     mk2 = RCA_MK2_SEF(44100, 20, 20e3)
 
     zs = range(1000, 50000, 5000)
-    mk2.plot_freqz_list(zs, mk2.set_Z_input, "Z ouput")
+    # mk2.plot_freqz_list(zs, mk2.set_Z_input, "Z ouput")
+    mk2.plot_freqz_list(range(1,10), )
 

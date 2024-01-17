@@ -54,6 +54,58 @@ class HighPassStage:
         self.L_HPm.set_inductance(L_HP)
 
 
+class LowPassStage:
+    def __init__(self, connection, fs, C_LP, L_LP, k):
+
+        self.fs = fs
+        self.L_LP = L_LP
+        self.C_LP = C_LP
+        self.k = k
+
+        self.L_LPm2 = Inductor(self.L_LP, self.fs)
+
+        self.S8 = SeriesAdaptor(self.L_LPm2, connection)
+        self.C_LPm1 = Capacitor(self.C_LP, self.fs)
+
+        self.P4 = ParallelAdaptor(self.C_LPm1, self.S8)
+        self.L_LPm1 = Inductor(self.L_LP, self.fs)
+
+        self.S7 = SeriesAdaptor(self.L_LPm1, self.P4)
+        self.L_LP2 = Inductor(self.L_LP, self.fs)
+
+        self.S6 = SeriesAdaptor(self.L_LP2, self.S7)
+        self.C_LP1 = Capacitor(self.C_LP, self.fs)
+
+        self.P3 = ParallelAdaptor(self.C_LP1, self.S6)
+        self.L_LP1 = Inductor(self.L_LP, self.fs)
+        self.S5 = SeriesAdaptor(self.L_LP1, self.P3)
+
+    def set_sample_rate(self, fs):
+        self.fs = fs
+        
+        self.C_LP1.set_sample_rate(fs)
+        self.L_LP1.set_sample_rate(fs)
+        self.L_LP2.set_sample_rate(fs)
+
+        self.C_LPm1.set_sample_rate(fs)
+        self.L_LPm1.set_sample_rate(fs)
+        self.L_LPm2.set_sample_rate(fs)
+
+    def set_components(self, C_LP, L_LP, LP_mod, k):
+        self.C_LP1.set_capacitance(C_LP)
+        self.L_LP1.set_inductance(L_LP)
+        self.L_LP2.set_inductance(L_LP)
+
+        if LP_mod == False:
+            wc = 1e8
+            self.C_LP = (2 * np.sqrt(2)) / (self.k * wc)
+            self.L_LP = (np.sqrt(2) * self.k) / wc
+
+        self.C_LPm1.set_capacitance(C_LP)
+        self.L_LPm1.set_inductance(L_LP)
+        self.L_LPm2.set_inductance(L_LP)
+
+
 class RCA_MK2_SEF(Circuit):
     
     def __init__(self, sample_rate: int, highpass_cutoff: float, lowpass_cutoff: float) -> None:

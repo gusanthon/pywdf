@@ -233,6 +233,25 @@ class RCA_MK2_SEF(Circuit):
         for stage in self.LP_stages:
             stage.set_components(self.C_LP, self.L_LP, self.lowpass_mod, self.k)
 
+    def set_lowpass_knob_position(self, pos):
+        assert pos >= 0 and pos < len(self.LP_vals)
+
+        self.lowpass_cutoff, vals = list(self.LP_vals.items())[pos]
+        self.C_LP = vals['C']
+        self.L_LP = vals['L']
+
+        for stage in self.LP_stages:
+            stage.set_components(self.C_LP, self.L_LP, self.lowpass_mod, self.k)
+
+    def set_highpass_knob_position(self,pos):
+        assert pos >= 0 and pos < len(self.HP_vals)
+
+        self.highpass_cutoff, vals = list(self.HP_vals.items())[pos]        
+        self.C_HP = vals['C']
+        self.L_HP = vals['L']
+
+        for stage in self.HP_stages:
+            stage.set_components(self.C_HP, self.L_HP, self.highpass_mod, self.k)
 
     def process_sample(self, sample: float) -> float:
         gain_db = 6 # factor to compensate for gain loss

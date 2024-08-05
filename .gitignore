@@ -321,4 +321,4 @@ cython_debug/
 .DS_STORE
 __pycache__/Circuit.cpython-39.pyc
 *.pyc
-.vscode/settings.json
+.vscode

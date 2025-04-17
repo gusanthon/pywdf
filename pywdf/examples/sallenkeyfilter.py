@@ -57,9 +57,9 @@ class SallenKeyFilter(Circuit):
         return Ra
         
     def set_params(self, cutoff: float, q_val: float) -> None:
-        Rval = 1 / self.capVal * 2* np.pi * cutoff
+        Rval = 1 / (self.capVal * 2* np.pi * cutoff)
 
-        q_val = clamp(.01, self.capRatio * .5, q_val)
+        # q_val = clamp(.01, self.capRatio * .5, q_val)
         Rratio = self.capRatio * np.sqrt(self.capRatio * self.capRatio - 4 * q_val * q_val) / 2 * q_val
         self.R1.set_resistance(Rval * Rratio)
         self.R2.set_resistance(Rval / Rratio)

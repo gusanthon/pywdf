@@ -3,15 +3,17 @@ import os
 
 sys.path.append(os.path.abspath(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
 
-from wdf import *
-from rtype import *
-from circuit import Circuit
+from core.wdf import *
+from core.rtype import *
+from core.circuit import Circuit
+
 
 def clamp(n, minn, maxn):
     return max(min(maxn, n), minn)
 
+
 class SallenKeyFilter(Circuit):
-    def __init__(self, sample_rate, cutoff, q_val) -> None:
+    def __init__(self, sample_rate: int, cutoff: float, q_val: float) -> None:
 
 
         self.fs = sample_rate
@@ -40,7 +42,7 @@ class SallenKeyFilter(Circuit):
     def process_sample(self, sample: float) -> float:
         return super().process_sample(sample) + self.R1.wave_to_voltage() + self.C1.wave_to_voltage()
 
-    def __impedance_calc(self, R: RTypeAdaptor):
+    def __impedance_calc(self, R: RTypeAdaptor) -> floar:
         Ag = 100.0
         Ri = 1.0e9
         Ro = 1.0e-1
@@ -54,7 +56,7 @@ class SallenKeyFilter(Circuit):
         Ra = (Rb * Rc * Rd + ((Ag + 1) * Rb * Rc + (Ag + 1) * Rb * Rd) * Ri - (Rb * Rc + (Rb + Rc) * Rd + (Rc + Rd) * Ri) * Ro) / ((Rb + Rc) * Rd + ((Ag + 1) * Rb + (Ag + 1) * Rc + Rd) * Ri - (Rb + Rc + Ri) * Ro);
         return Ra
         
-    def set_params(self, cutoff, q_val):
+    def set_params(self, cutoff: float, q_val: float) -> None:
         Rval = 1 / self.capVal * 2* np.pi * cutoff
 
         q_val = clamp(.01, self.capRatio * .5, q_val)
@@ -62,7 +64,9 @@ class SallenKeyFilter(Circuit):
         self.R1.set_resistance(Rval * Rratio)
         self.R2.set_resistance(Rval / Rratio)
 
-skf = SallenKeyFilter(44100, 1000, .5)
 
-skf.set_params(1000, 2)
-skf.plot_freqz()
+if __name__ == '__main__':
+    skf = SallenKeyFilter(44100, 1000, .5)
+    
+    skf.set_params(1000, 2)
+    skf.plot_freqz()

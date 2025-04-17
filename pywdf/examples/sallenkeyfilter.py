@@ -42,7 +42,7 @@ class SallenKeyFilter(Circuit):
     def process_sample(self, sample: float) -> float:
         return super().process_sample(sample) + self.R1.wave_to_voltage() + self.C1.wave_to_voltage()
 
-    def __impedance_calc(self, R: RTypeAdaptor) -> floar:
+    def __impedance_calc(self, R: RTypeAdaptor) -> float:
         Ag = 100.0
         Ri = 1.0e9
         Ro = 1.0e-1

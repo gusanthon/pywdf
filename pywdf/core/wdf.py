@@ -201,7 +201,8 @@ class Capacitor(baseWDF):
         self.z = self.a
 
     def propagate_reflected_wave(self) -> float:
-        self.b = self.z
+        # self.b = self.z
+        self.b = self.b_coef * self.b + self.a_coef * self.z
         return self.b
 
     def reset(self) -> None:
@@ -221,6 +222,7 @@ class Inductor(baseWDF):
         alpha: float = 1.0
     ) -> None:
 
+        baseWDF.__init__(self)
         self.fs = fs
         self.L = L
         self.z = 0.0
@@ -258,9 +260,8 @@ class Inductor(baseWDF):
         self.z = self.a
 
     def propagate_reflected_wave(self) -> float:
-        self.b = -self.z
+        # self.b = -self.z
         self.b = self.b_coef * self.b - self.a_coef * self.z
-
         return self.b
 
     def reset(self) -> None:

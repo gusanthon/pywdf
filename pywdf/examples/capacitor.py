@@ -1,13 +1,12 @@
 import sys
 import os
 import matplotlib.pyplot as plt
+import numpy as np
 
 sys.path.append(os.path.abspath(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
 
-from core.wdf import *
+from core.wdf import Capacitor, IdealVoltageSource
 from core.circuit import Circuit
-
-
 
 class _Capacitor(Circuit):
 
@@ -48,38 +47,116 @@ class _Capacitor(Circuit):
 
 if __name__ == "__main__":
     
-    fs = 44100
-    f = 40
-    duration = 0.1
+    fs = 48_000
+    capacitance = 47e-9
+    frequency = 1_000.0
+    amplitude = 1.0
+    duration = 5e-3
+    alpha = 0.0                         # Default 0.0 – Backward Euler 
 
-    cap = _Capacitor(fs, 0.0, 1.0)        # 0.0 – Backward Euler; 1.0 – Bilinear Transform 
-   
+    capacitor_circuit = _Capacitor(
+        sample_rate = fs,
+        tolerance   = 0.0,
+        alpha       = alpha,            # 0.0 – Backward Euler; 1.0 – Bilinear Transform 
+    )
+
+ 
     t = np.linspace(0, duration, int(fs * duration), endpoint=False)
 
-    sine = np.sin(2 * np.pi * f * t)  
+    time = np.arange(int(fs * duration)) / fs
 
-    y = cap.process_i_v_signals(sine)
+    input_voltage = amplitude * np.sin(
+        2.0 * np.pi * frequency * time
+    )
 
-    v, _, i  = zip(*y)
+    result = capacitor_circuit.process_i_v_signals(
+        input_voltage
+    )
 
-    _, ax = plt.subplots(nrows=1, ncols=1, figsize=(10, 6.5))
-    ax.plot(v, color="r", label="voltage across", alpha=0.75)
-    ax.set_xlabel("sample")
-    ax.set_ylabel("v[n]")
+    voltage, source_current, current = map(        
+        np.asarray,
+        zip(*result),
+    )
 
-    color = 'tab:blue'
-    ax2 = ax.twinx() 
-    ax2.set_ylabel('i[n]', color=color)
-    ax2.tick_params(axis='y', labelcolor=color)
-    ax2.plot(i, color=color, label="current through", alpha=0.75)
 
-    ax.set_title(
-        loc="left", 
-        label="v[n] voltage across and i[n] current through capacitor C1 ")
-    
-    ax.legend()  
-    ax2.legend()  
-    ax.grid(True)
+    # Backward Euler reference:
+    previous_voltage = np.concatenate(
+        ([0.0], voltage[:-1])
+    )
+    expected_current = (
+        capacitance
+        * fs
+        * (voltage - previous_voltage)
+    )
 
-    plt.savefig("./tests/capacitor.png")
+    # np.testing.assert_allclose(   # Asserts for Backwards Euler
+    #     voltage,
+    #     input_voltage,
+    #     rtol=1e-12,
+    #     atol=1e-12,
+    # )
+
+    # np.testing.assert_allclose(
+    #     current,
+    #     expected_current,
+    #     rtol=1e-10,
+    #     atol=1e-14,
+    # )
+
+    _, ax_voltage = plt.subplots(
+        nrows=1,
+        ncols=1,
+        figsize=(10, 6.5),
+    )
+
+    ax_voltage.plot(
+        time * 1e3,
+        voltage,
+        label="Capacitor voltage",
+    )
+    ax_voltage.set_xlabel("Time [ms]")
+    ax_voltage.set_ylabel("Voltage [V]")
+    ax_voltage.grid(True)
+
+    ax_current = ax_voltage.twinx()
+
+    ax_current.plot(
+        time * 1e3,
+        current * 1e6,
+        label="WDF capacitor current",
+        alpha=0.75,
+    )
+
+    ax_current.plot(
+        time * 1e3,
+        expected_current * 1e6,
+        linestyle="--",
+        label="Expected BE current",
+        alpha=0.75,
+    )
+
+    ax_current.set_ylabel("Current [µA]")
+
+    ax_voltage.set_title(
+        "Voltage-driven 47 nF capacitor"
+    )
+
+    lines_1, labels_1 = (
+        ax_voltage.get_legend_handles_labels()
+    )
+    lines_2, labels_2 = (
+        ax_current.get_legend_handles_labels()
+    )
+
+    ax_voltage.legend(
+        lines_1 + lines_2,
+        labels_1 + labels_2,
+        loc="upper right",
+    )
+
+    plt.tight_layout()
+    plt.savefig(
+        "../../tests/capacitor.png",
+        dpi=150,
+    )
     plt.show()

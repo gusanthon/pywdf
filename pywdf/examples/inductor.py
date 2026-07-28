@@ -2,14 +2,15 @@ import matplotlib.pyplot as plt
 from pathlib import Path
 import sys
 
+import numpy as np
+
 script_path = Path(__file__).resolve()
 src_dir = script_path.parent.parent
 
 sys.path.append(str(src_dir))
 
-from core.wdf import *
+from core.wdf import IdealCurrentSource, Inductor
 from core.circuit import Circuit
-
 
 class _Inductor(Circuit):
     
@@ -19,7 +20,7 @@ class _Inductor(Circuit):
         alpha: int
     ) -> None:
     
-        self.L = 1.0e3
+        self.L = 0.5                # 500 mH
         self.fs = sample_rate
         self.twopi = 2 * np.pi
 
@@ -29,7 +30,11 @@ class _Inductor(Circuit):
         # init and set circuit
         super().__init__(self.Is, self.Is, self.L1)
 
-    def process_sample_i_v(self, sample: float) -> float:
+    def process_sample_i_v(
+            self, 
+            sample: float
+        ) -> tuple[float, float, float]:
+
         """Process an individual sample with this circuit.
 
         Note: not every circuit will follow this general pattern, in such cases users may want to overwrite this function. See example circuits
@@ -49,11 +54,11 @@ class _Inductor(Circuit):
 
 if __name__ == "__main__":
 
-    fs = 44100
-    f = 4
-    duration = 1.0
+    fs = 44100                          # Samples/s
+    f = 500.0                           # 500 Hz
+    duration = .02                      # s
 
-    _inductor = _Inductor(fs, 1.0)      # 0.0 – Backward Euler; 1.0 – Bilinear Transform 
+    _inductor = _Inductor(fs, 0.5)      # 0.0 – Backward Euler; 0.* – Damping ; 1.0 – Bilinear Transform 
 
     t = np.linspace(0, duration, int(fs * duration), endpoint=False)
 
@@ -79,5 +84,5 @@ if __name__ == "__main__":
     ax2.legend()  
     ax.grid(True)
 
-    plt.savefig("./tests/inductor.png")
+    plt.savefig("../../tests/inductor.png")
     plt.show()

@@ -426,6 +426,10 @@ class IdealVoltageSource(rootWDF):
         self.Vs = 0
         self.calc_impedance()
 
+    def calc_impedance(self) -> None:
+        self.Rp = self.next.Rp
+        self.G = 1.0 / self.Rp
+
     def set_voltage(self, new_V: float) -> None:
         self.Vs = new_V
 
@@ -441,25 +445,36 @@ class IdealVoltageSource(rootWDF):
 
 
 class IdealCurrentSource(rootWDF):
-    def __init__(self, next: baseWDF) -> None:
+
+    def __init__(self, next: baseWDF) -> None: 
         '''
         IdealCurrentSource is a subclass of rootWDF and not of baseWDF.
         This is because there is delay free loop in the reflected wave  
         therefore we can only use an ideal current source at the root of a connection tree, not as a leaf node.
         '''
         rootWDF.__init__(self, next)
+        self.next = next
         self.Is = 0
-        # self.Vs = 0
+        self.twoR = 0
+        self.twoR_Is = 0
         self.calc_impedance()
+
+    def calc_impedance(self) -> None:
+        self.Rp = self.next.Rp
+        self.G = 1.0 / self.Rp
+        self.twoR = 2.0 * self.next.Rp
+        self.twoR_Is = self.twoR * self.Is
 
     def set_current(self, new_I: float) -> None:
         self.Is = new_I
+        self.twoR_Is = self.twoR * self.Is
+       
 
     def accept_incident_wave(self, a: float) -> None:
         self.a = a
 
     def propagate_reflected_wave(self) -> float:
-        self.b = 2.0 * self.Is + self.a
+        self.b = self.a + self.twoR_Is 
         return self.b
 
 
@@ -467,8 +482,8 @@ class IdealCurrentSource(rootWDF):
 
 
 class ResistiveVoltageSource(baseWDF):
-    # def __init__(self, Rval: float = None):
-    def __init__(self, next: baseWDF = None, Rval: float = None) -> None:
+    def __init__(self, Rval: float = None) -> None: 
+    # def __init__(self, next: baseWDF = None, Rval: float = None) -> None:
         baseWDF.__init__(self)
         self.Rval = Rval if Rval else 1e-9
         self.Vs = 0

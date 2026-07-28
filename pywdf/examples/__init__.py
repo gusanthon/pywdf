@@ -8,4 +8,5 @@ __all__ = [
     "rca_mk2_sef",
     "rclowpass",
     "voltagedivider",
+    "chua_circuit",
 ]

@@ -11,8 +11,12 @@ from core.circuit import Circuit
 
 class DiodeClipper(Circuit):
     def __init__(
-        self, sample_rate: int, cutoff: float = 1000, input_gain_db: float = 0,
-        output_gain_db: float = 0, n_diodes: float = 2
+        self, 
+        sample_rate: int, 
+        cutoff: float = 1000, 
+        input_gain_db: float = 0,
+        output_gain_db: float = 0, 
+        n_diodes: float = 2
     ) -> None:
 
         self.fs = sample_rate
@@ -38,7 +42,7 @@ class DiodeClipper(Circuit):
 
     def process_sample(self, sample: float) -> float:
         sample *= self.input_gain
-        return -(super().process_sample(sample) * self.output_gain) ### ¡! phase inverted !¡
+        return -( super().process_sample(sample) * self.output_gain) ### ¡! phase inverted !¡
 
     def set_cutoff(self, new_cutoff: float) -> None:
         if self.cutoff != new_cutoff:
@@ -62,5 +66,12 @@ class DiodeClipper(Circuit):
 
 if __name__ == "__main__":
 
-    dc = DiodeClipper(44100, cutoff=5000, input_gain_db=5)
-    dc.AC_transient_analysis()
+    dc = DiodeClipper(
+        44100, 
+        cutoff=5000, 
+        input_gain_db=5
+    )
+
+    dc.AC_transient_analysis(
+        outpath="../../tests/diode_clipper_transient_anal.png"
+    )

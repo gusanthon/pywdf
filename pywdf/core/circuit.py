@@ -22,7 +22,8 @@ class Circuit:
         self.root = root
         self.output = output
 
-    def process_sample(self, sample: float) -> float:
+
+    def process_sample(self, sample: float) -> tuple[float, float, float]:
         """Process an individual sample with this circuit.
 
         Note: not every circuit will follow this general pattern, in such cases users may want to overwrite this function. See example circuits
@@ -38,6 +39,40 @@ class Circuit:
         self.root.next.accept_incident_wave(self.root.propagate_reflected_wave())
         return self.output.wave_to_voltage()
 
+
+
+    def process_sample_i_v(self, sample: float) -> tuple[float, float, float]:
+        """Process an individual sample with this circuit.
+
+        Note: not every circuit will follow this general pattern, in such cases users may want to overwrite this function. See example circuits
+
+        Args:
+            sample (float): incoming sample to process
+
+        Returns:
+            (v, vs_i, i) I-V tupple: processed sample
+        """
+        self.source.set_voltage(sample)
+        self.root.accept_incident_wave(self.root.next.propagate_reflected_wave())
+        self.root.next.accept_incident_wave(self.root.propagate_reflected_wave())
+
+        return ( self.output.wave_to_voltage(), self.source.wave_to_current(), self.output.wave_to_current() ) 
+
+
+    def process_i_v_signals(self, signal: np.array) -> np.array:
+        """Process an entire signal with this circuit.
+
+        Args:
+            signal (np.array): incoming signal to process
+
+        Returns:
+           (i,v) tuples list: processed signal
+        """
+        self.reset()
+        l = [ self.process_sample_i_v(sample) for sample in signal]
+        return l
+
+
     def process_signal(self, signal: np.array) -> np.array:
         """Process an entire signal with this circuit.
 
@@ -48,7 +83,10 @@ class Circuit:
             np.array: processed signal
         """
         self.reset()
-        return np.array([self.process_sample(sample) for sample in signal])
+
+        return np.array([ self.process_sample(sample) for sample in signal ])
+
+
 
     def process_wav(self, filepath: str, output_filepath: str = None) -> np.array:
         fs, x = wavfile.read(filepath)
@@ -67,8 +105,14 @@ class Circuit:
         elif hasattr(args[0], "__iter__"):
             return self.process_signal(args[0])
 
+
+
+
+
+
     def get_impulse_response(self, delta_dur: float = 1, amp: float = 1) -> np.array:
-        """Get circuit's impulse response
+        """
+        Get circuit's impulse response
 
         Args:
             delta_dur (float, optional): duration of Dirac delta function in seconds. Defaults to 1.
@@ -80,6 +124,34 @@ class Circuit:
         d = np.zeros(int(delta_dur * self.fs))
         d[0] = amp
         return self.process_signal(d)
+
+
+
+
+
+    def plot_signal(
+        self,
+        signal: np.array,
+        n_samples: int = 500,
+        outpath: str = None,
+        title: str = "Signal",
+    ) -> None:
+
+        plt.figure(figsize=(9, 5.85))
+        plt.plot(signal[:n_samples])
+        plt.xlabel("Sample [n]")
+        plt.ylabel("Amplitude [V]")
+        plt.title(title)
+
+        plt.grid()
+        if outpath:
+            plt.savefig(outpath)
+        plt.show()
+
+
+
+
+
 
     def plot_impulse_response(
         self,
@@ -120,14 +192,23 @@ class Circuit:
             if isinstance(self.__dict__[key], baseWDF):
                 self.__dict__[key].reset()
 
+
+
+
+
     def compute_spectrum(self, fft_size: int = None) -> np.ndarray:
         x = self.get_impulse_response()
         N2 = int(fft_size / 2 - 1)
         H = fft(x, fft_size)[:N2]
         return H
 
+
+
+
+
     def plot_freqz(self, outpath: str = None, fft_size: int = None):
-        """Plot the circuit's frequency response
+        """
+        Plot the circuit's frequency response
 
         Args:
             outpath (str, optional): filepath to save figure. Defaults to None.
@@ -170,6 +251,9 @@ class Circuit:
         if outpath:
             plt.savefig(outpath)
         plt.show()
+
+
+
 
     def plot_freqz_list(
         self,
@@ -240,6 +324,59 @@ class Circuit:
             plt.savefig(outpath)
 
         plt.show()
+
+
+
+
+
+    def i_v_analysis(
+        self,
+        freq: float = 1000,
+        amplitude: float = 1,
+        t_ms: float = 5,
+        outpath: str = None,
+    ):
+        """Plot transient analysis of Circuit's response to sine wave
+
+        Args:
+            freq (float, optional): frequency of sine wave. Defaults to 1000.
+            amplitude (float, optional): amplitude of sine wave. Defaults to 1.
+            t_ms (float, optional): time in ms of sine wave. Defaults to 5.
+        """
+        _, ax = plt.subplots(nrows=1, ncols=1, figsize=(10, 6.5))
+
+        n_samples = int(t_ms * self.fs / 1000)
+        n = np.arange(0, 2, 1 / self.fs)
+        x = np.sin(2 * np.pi * freq * n) * amplitude
+        
+        y = self.process_i_v_signals(x)
+
+        v, ii, io = zip(*y)
+  
+        v, ii, io = np.array(v), np.array(ii) * 100, np.array(io) * 0.01 
+
+        ax.plot(x[:n_samples], label="input signal")
+        ax.plot(v[:n_samples], label="voltage out", alpha=0.75)
+        ax.plot(ii[:n_samples], label="current source through", alpha=0.75)
+        ax.plot(io[:n_samples], label="current output through", alpha=0.75)
+        ax.set_xlabel("sample")
+        ax.set_ylabel("amplitude")
+        ax.set_yscale('log')
+        ax.set_ylim(0, 1000000)
+
+        ax.set_title(loc="left", label="output signal vs input signal waveforms")
+        ax.grid(True)
+        ax.legend()
+
+        if outpath:
+            plt.savefig(outpath)
+
+        plt.show()
+
+
+
+
+
 
     def AC_transient_analysis(
         self,

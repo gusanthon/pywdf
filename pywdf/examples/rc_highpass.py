@@ -44,7 +44,25 @@ class RCHighPass(Circuit):
 
 
 if __name__ == "__main__":
+
     lpf = RCHighPass(44100, 1000)
-    lpf.plot_freqz()
-    # lpf.plot_freqz_list(range(1000, 10000, 1000), lpf.set_cutoff, param_label="cutoff")
-    # lpf.AC_transient_analysis()
+
+    lpf.plot_freqz( outpath="tests/rc_highpass_freqz.png" )
+
+    lpf.plot_freqz_list(
+        range(1000, 10000, 1000), 
+        lpf.set_cutoff, 
+        param_label="cutoff",
+        outpath="tests/rc_highpass_freqz_list.png"
+        )
+
+    lpf.AC_transient_analysis(
+        freq = 1000,
+        amplitude = 1,
+        t_ms = 5,
+        outpath="tests/rc_highpass_ac_analysis.png"
+        )
+
+    lpf.plot_impulse_response( outpath="tests/rc_pass_impulse_response.png" )
+    
+    print("done")

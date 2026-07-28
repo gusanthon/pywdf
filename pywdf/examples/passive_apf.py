@@ -12,7 +12,7 @@ import sys
 
 script_dir = Path(__file__).resolve().parent
 wdf_dir = script_dir.parent
-plot_dir = wdf_dir.parent / "data" / "plot"
+plot_dir = wdf_dir.parent / "tests" / "plots"
 
 # add path to PYTHONPATH
 sys.path.append(str(wdf_dir))
@@ -283,8 +283,14 @@ class PassiveAPF(Circuit):
 
 
 if __name__ == "__main__":
+    
     apf = PassiveAPF(48000)
+    
     apf.plot_freqz()
+    
     apf.plot_freqz_list(
-        [100, 250, 500, 1000, 2000, 4000, 8000], apf.set_cutoff, param_label="cutoff", outpath=plot_dir / "passive_apf-cutoff_list.png"
+        [100, 250, 500, 1000, 2000, 4000, 8000], 
+        apf.set_cutoff, 
+        param_label="cutoff", 
+        outpath=plot_dir / "passive_apf-cutoff_list.png"
     )

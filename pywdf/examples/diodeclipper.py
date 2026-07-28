@@ -66,5 +66,12 @@ class DiodeClipper(Circuit):
 
 if __name__ == "__main__":
 
-    dc = DiodeClipper(44100, cutoff=5000, input_gain_db=5)
-    dc.AC_transient_analysis()
+    dc = DiodeClipper(
+        44100, 
+        cutoff=5000, 
+        input_gain_db=5
+    )
+
+    dc.AC_transient_analysis(
+        outpath="../../tests/diode_clipper_transient_anal.png"
+    )
